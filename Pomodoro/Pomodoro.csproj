@@ -40,11 +40,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IntervalFinishedEventArgs.cs" />
-    <Compile Include="IntervalInProgressException.cs" />
-    <Compile Include="ITimeInterval.cs" />
-    <Compile Include="PomodoroException.cs" />
+    <Compile Include="IntervalType.cs" />
+    <Compile Include="PomodoroConfig.cs" />
     <Compile Include="PomodoroTimer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TimeMaster.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,6 +1,8 @@
 ﻿namespace Specification
 {
+    using System;
     using System.Collections.Generic;
+    using Halp;
     using Moq;
     using NUnit.Framework;
     using Pomodoro;
@@ -8,51 +10,38 @@
     [TestFixture]
     class PomodoroTimerSpec
     {
+        private TimeMaster _timeMaster;
+        private TimeSpan _productivityInterval;
+
+        private PomodoroEventHelper _eventHelper;
+
+        [SetUp]
+        public void Setup()
+        {
+            _productivityInterval = new TimeSpan(0, 0, 2, 0);
+            _eventHelper = new PomodoroEventHelper();
+            _timeMaster = new ImmediateTimeMaster();
+        }
+
         [Test]
-        public void ShouldStartWithFirstInterval()
+        public void ShouldStartWithProductivityInterval()
         {
             //given
-            var intervalMock1 = new Mock<ITimeInterval>();
-            var intervalMock2 = new Mock<ITimeInterval>();
-            var timer = new PomodoroTimer(new List<ITimeInterval>{ intervalMock1.Object, intervalMock2.Object});
+            var config = new PomodoroConfig
+            {
+                Productivity = _productivityInterval
+            };
+            var pomodoro = new PomodoroTimer(config, _timeMaster);
+            pomodoro.EndOfProductivityInterval += _eventHelper.EndOfProductivityInterval;
+            var expectedIntervals = new List<IntervalType> { IntervalType.Productive };
 
             //when
-            timer.StartNext();
+            pomodoro.Start();
+            var actualFinishedIntervals = _eventHelper.FinishedIntervals;
 
             //then
-            intervalMock1.Verify(mock => mock.Start(), Times.Once);
-            intervalMock2.Verify(mock => mock.Start(), Times.Never);
+            Assert.That(actualFinishedIntervals, Is.EquivalentTo(expectedIntervals));
         }
 
-        [Test]
-        public void ShouldStartNextIntervalAfterThePreviousOneHasEnded()
-        {
-            //given
-            var intervalMock1 = new Mock<ITimeInterval>();
-            var intervalMock2 = new Mock<ITimeInterval>();
-            var timer = new PomodoroTimer(new List<ITimeInterval> { intervalMock1.Object, intervalMock2.Object });
-            timer.StartNext();
-            intervalMock1.Raise(interval => interval.Finished += null, new IntervalFinishedEventArgs());
-
-            //when
-            timer.StartNext();
-
-            //then
-            intervalMock1.Verify(mock => mock.Start(), Times.Once);
-            intervalMock2.Verify(mock => mock.Start(), Times.Once);
-        }
-
-        [Test]
-        [ExpectedException(typeof(IntervalInProgressException))]
-        public void ShouldNotAllowStartingNextIntervalBeforePreviousEnds()
-        {
-            //given
-            var intervalMock = new Mock<ITimeInterval>();
-            var timer = new PomodoroTimer(new List<ITimeInterval> { intervalMock.Object });
-            timer.StartNext();
-
-            //when
-            timer.StartNext();
-        }
     }
 }

@@ -45,6 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Halp\ImmediateTimeMaster.cs" />
+    <Compile Include="Halp\PomodoroEventHelper.cs" />
     <Compile Include="PomodoroTimerSpec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

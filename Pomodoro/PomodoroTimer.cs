@@ -1,41 +1,33 @@
 ﻿namespace Pomodoro
 {
-    using System.Collections.Generic;
+    using System;
 
     public class PomodoroTimer
     {
-        private readonly IList<ITimeInterval> _intervals;
-        private bool _intervalInProgress;
-        private int _currentIntervalId;
+        private readonly PomodoroConfig _pomodoroConfig;
+        private readonly TimeMaster _timeMaster;
 
-        public PomodoroTimer(List<ITimeInterval> intervals)
+        public PomodoroTimer(PomodoroConfig pomodoroConfig, TimeMaster timeMaster)
         {
-            _intervals = intervals;
-            _intervalInProgress = false;
-            _currentIntervalId = -1;
+            _pomodoroConfig = pomodoroConfig;
+            _timeMaster = timeMaster;
+
         }
 
-        public void StartNext()
+        public void Start()
         {
-            if (_intervalInProgress)
+            _timeMaster.Pass(_pomodoroConfig.Productivity);
+            OnProductivityIntervalEnd();
+        }
+
+        private void OnProductivityIntervalEnd()
+        {
+            if (EndOfProductivityInterval != null)
             {
-                throw new IntervalInProgressException();
+                EndOfProductivityInterval(this, new EventArgs());
             }
-
-            if (_currentIntervalId >= 0)
-            {
-                _intervals[_currentIntervalId].Finished -= IntervalFinished;
-            }
-
-            var nextInterval = _intervals[++_currentIntervalId];
-            nextInterval.Finished += IntervalFinished;
-            nextInterval.Start();
-            _intervalInProgress = true;
         }
 
-        private void IntervalFinished(object sender, IntervalFinishedEventArgs e)
-        {
-            _intervalInProgress = false;
-        }
+        public event EventHandler EndOfProductivityInterval;
     }
 }
