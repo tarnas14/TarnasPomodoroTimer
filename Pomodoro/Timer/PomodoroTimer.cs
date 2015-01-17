@@ -1,4 +1,4 @@
-﻿namespace Pomodoro
+namespace Pomodoro.Timer
 {
     using System;
 
@@ -20,6 +20,11 @@
 
         public void Start(PomodoroConfig config)
         {
+            if (_currentInterval != IntervalType.None)
+            {
+                throw new CannotStartPomodoroMultipleTimesException();
+            }
+
             _pomodoroConfig = config;
             _currentInterval = IntervalType.Productive;
             _currentIntervalFinished = false;

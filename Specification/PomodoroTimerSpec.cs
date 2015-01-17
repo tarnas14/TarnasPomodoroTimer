@@ -3,14 +3,14 @@
     using System;
     using System.Collections.Generic;
     using Halp;
-    using Moq;
     using NUnit.Framework;
     using Pomodoro;
+    using Pomodoro.Timer;
 
     [TestFixture]
     class PomodoroTimerSpec
     {
-        private TimeMaster _timeMaster;
+        private ControlledTimeMaster _timeMaster;
         private TimeSpan _productivityInterval;
 
         private PomodoroEventHelper _eventHelper;
@@ -20,7 +20,7 @@
         public void Setup()
         {
             _eventHelper = new PomodoroEventHelper();
-            _timeMaster = new ImmediateTimeMaster();
+            _timeMaster = new ControlledTimeMaster();
             _pomodoro = new PomodoroTimer(_timeMaster);
             _pomodoro.IntervalFinished += _eventHelper.EndOfInterval;
         }
@@ -37,6 +37,7 @@
 
             //when
             _pomodoro.Start(config);
+            _timeMaster.CallLastCallback();
 
             //then
             Assert.That(_eventHelper.FinishedIntervals, Is.EquivalentTo(expectedIntervals));
@@ -54,13 +55,30 @@
             var expectedIntervals = new List<IntervalType> { IntervalType.Productive, IntervalType.ShortBreak };
 
             _pomodoro.Start(config);
+            _timeMaster.CallLastCallback();
 
             //when
             _pomodoro.StartNext();
+            _timeMaster.CallLastCallback();
 
             //then
             Assert.That(_eventHelper.FinishedIntervals, Is.EquivalentTo(expectedIntervals));
+        }
 
+        [Test]
+        [ExpectedException(typeof(CannotStartPomodoroMultipleTimesException))]
+        public void ShouldNotStartPomodoroTwice()
+        {
+            //given
+            var config = new PomodoroConfig
+            {
+                Productivity = new TimeSpan(),
+                ShortBreak = new TimeSpan()
+            };
+            _pomodoro.Start(config);
+
+            //when
+            _pomodoro.Start(config);
         }
     }
 }
