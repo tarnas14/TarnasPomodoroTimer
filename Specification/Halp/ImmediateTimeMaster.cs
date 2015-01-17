@@ -5,8 +5,9 @@
 
     internal class ImmediateTimeMaster : TimeMaster
     {
-        public void Pass(TimeSpan timeInterval)
+        public void Pass(TimeSpan timeInterval, Action callback)
         {
+            callback.Invoke();
         }
     }
 }

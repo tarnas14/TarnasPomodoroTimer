@@ -4,6 +4,6 @@
 
     public interface TimeMaster
     {
-        void Pass(TimeSpan timeInterval);
+        void Pass(TimeSpan timeInterval, Action callback);
     }
 }

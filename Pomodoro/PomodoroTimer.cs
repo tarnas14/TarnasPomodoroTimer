@@ -4,30 +4,45 @@
 
     public class PomodoroTimer
     {
-        private readonly PomodoroConfig _pomodoroConfig;
         private readonly TimeMaster _timeMaster;
+        private PomodoroConfig _pomodoroConfig;
 
-        public PomodoroTimer(PomodoroConfig pomodoroConfig, TimeMaster timeMaster)
+        private IntervalType _currentInterval;
+        private bool _currentIntervalFinished;
+
+        public PomodoroTimer(TimeMaster timeMaster)
         {
-            _pomodoroConfig = pomodoroConfig;
             _timeMaster = timeMaster;
-
+            _currentInterval = IntervalType.None;
         }
 
-        public void Start()
+        public event EventHandler<IntervalFinishedEventArgs> IntervalFinished;
+
+        public void Start(PomodoroConfig config)
         {
-            _timeMaster.Pass(_pomodoroConfig.Productivity);
-            OnProductivityIntervalEnd();
+            _pomodoroConfig = config;
+            _currentInterval = IntervalType.Productive;
+            _currentIntervalFinished = false;
+            _timeMaster.Pass(_pomodoroConfig.Productivity, OnIntervalEnd);
         }
 
-        private void OnProductivityIntervalEnd()
+        private void OnIntervalEnd()
         {
-            if (EndOfProductivityInterval != null)
+            _currentIntervalFinished = true;
+            if (IntervalFinished != null)
             {
-                EndOfProductivityInterval(this, new EventArgs());
+                IntervalFinished(this, new IntervalFinishedEventArgs{ Type = _currentInterval });
             }
         }
 
-        public event EventHandler EndOfProductivityInterval;
+        public void StartNext()
+        {
+            if (_currentIntervalFinished && _currentInterval == IntervalType.Productive)
+            {
+                _currentInterval = IntervalType.ShortBreak;
+                _currentIntervalFinished = false;
+                _timeMaster.Pass(_pomodoroConfig.ShortBreak, OnIntervalEnd);
+            }
+        }
     }
 }

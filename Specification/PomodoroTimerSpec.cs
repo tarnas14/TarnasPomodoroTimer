@@ -14,13 +14,15 @@
         private TimeSpan _productivityInterval;
 
         private PomodoroEventHelper _eventHelper;
+        private PomodoroTimer _pomodoro;
 
         [SetUp]
         public void Setup()
         {
-            _productivityInterval = new TimeSpan(0, 0, 2, 0);
             _eventHelper = new PomodoroEventHelper();
             _timeMaster = new ImmediateTimeMaster();
+            _pomodoro = new PomodoroTimer(_timeMaster);
+            _pomodoro.IntervalFinished += _eventHelper.EndOfInterval;
         }
 
         [Test]
@@ -29,19 +31,36 @@
             //given
             var config = new PomodoroConfig
             {
-                Productivity = _productivityInterval
+                Productivity = new TimeSpan()
             };
-            var pomodoro = new PomodoroTimer(config, _timeMaster);
-            pomodoro.EndOfProductivityInterval += _eventHelper.EndOfProductivityInterval;
             var expectedIntervals = new List<IntervalType> { IntervalType.Productive };
 
             //when
-            pomodoro.Start();
-            var actualFinishedIntervals = _eventHelper.FinishedIntervals;
+            _pomodoro.Start(config);
 
             //then
-            Assert.That(actualFinishedIntervals, Is.EquivalentTo(expectedIntervals));
+            Assert.That(_eventHelper.FinishedIntervals, Is.EquivalentTo(expectedIntervals));
         }
 
+        [Test]
+        public void ShouldStartShortBreakAFterEndingProductivityInterval()
+        {
+            //given
+            var config = new PomodoroConfig
+            {
+                Productivity = new TimeSpan(),
+                ShortBreak = new TimeSpan()
+            };
+            var expectedIntervals = new List<IntervalType> { IntervalType.Productive, IntervalType.ShortBreak };
+
+            _pomodoro.Start(config);
+
+            //when
+            _pomodoro.StartNext();
+
+            //then
+            Assert.That(_eventHelper.FinishedIntervals, Is.EquivalentTo(expectedIntervals));
+
+        }
     }
 }

@@ -5,5 +5,6 @@
     public class PomodoroConfig
     {
         public TimeSpan Productivity { get; set; }
+        public TimeSpan ShortBreak { get; set; }
     }
 }

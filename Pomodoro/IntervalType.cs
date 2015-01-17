@@ -2,6 +2,8 @@
 {
     public enum IntervalType
     {
-        Productive
+        None,
+        Productive,
+        ShortBreak
     }
 }

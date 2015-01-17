@@ -1,6 +1,5 @@
 ﻿namespace Specification.Halp
 {
-    using System;
     using System.Collections.Generic;
     using Pomodoro;
 
@@ -11,11 +10,11 @@
             FinishedIntervals = new List<IntervalType>();
         }
 
-        public void EndOfProductivityInterval(object sender, EventArgs e)
-        {
-            FinishedIntervals.Add(IntervalType.Productive);
-        }
-
         public IList<IntervalType> FinishedIntervals { get; set; }
+
+        public void EndOfInterval(object sender, IntervalFinishedEventArgs e)
+        {
+            FinishedIntervals.Add(e.Type);
+        }
     }
 }
