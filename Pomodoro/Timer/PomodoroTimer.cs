@@ -9,6 +9,7 @@ namespace Pomodoro.Timer
 
         private IntervalType _currentInterval;
         private bool _currentIntervalFinished;
+        private int _productiveIntervalsSinceLastLongBreak;
 
         public PomodoroTimer(TimeMaster timeMaster)
         {
@@ -26,14 +27,23 @@ namespace Pomodoro.Timer
             }
 
             _pomodoroConfig = config;
-            _currentInterval = IntervalType.Productive;
-            _currentIntervalFinished = false;
-            _timeMaster.Pass(_pomodoroConfig.Productivity, OnIntervalEnd);
+            
+            StartInterval(IntervalType.Productive);
         }
 
         private void OnIntervalEnd()
         {
+            if (_currentInterval == IntervalType.Productive)
+            {
+                _productiveIntervalsSinceLastLongBreak++;
+            }
+            else if (_currentInterval == IntervalType.LongBreak)
+            {
+                _productiveIntervalsSinceLastLongBreak = 0;
+            }
+
             _currentIntervalFinished = true;
+
             if (IntervalFinished != null)
             {
                 IntervalFinished(this, new IntervalFinishedEventArgs{ Type = _currentInterval });
@@ -42,11 +52,57 @@ namespace Pomodoro.Timer
 
         public void StartNext()
         {
-            if (_currentIntervalFinished && _currentInterval == IntervalType.Productive)
+            if (!_currentIntervalFinished && _currentInterval != IntervalType.None)
             {
-                _currentInterval = IntervalType.ShortBreak;
-                _currentIntervalFinished = false;
-                _timeMaster.Pass(_pomodoroConfig.ShortBreak, OnIntervalEnd);
+                return;
+            }
+
+            if (ShouldStartShortBreak())
+            {
+                StartInterval(IntervalType.ShortBreak);
+            }
+            else if (ShouldStartLongBreak())
+            {
+                StartInterval(IntervalType.LongBreak);
+            }
+            else if (ShouldStartProductiveInterval())
+            {
+                StartInterval(IntervalType.Productive);
+            }
+        }
+
+        private bool ShouldStartProductiveInterval()
+        {
+            return _currentInterval != IntervalType.Productive;
+        }
+
+        private bool ShouldStartLongBreak()
+        {
+            return _currentInterval == IntervalType.Productive &&
+                   _productiveIntervalsSinceLastLongBreak == _pomodoroConfig.LongBreakAfter;
+        }
+
+        private bool ShouldStartShortBreak()
+        {
+            return _currentInterval == IntervalType.Productive &&
+                   _productiveIntervalsSinceLastLongBreak < _pomodoroConfig.LongBreakAfter;
+        }
+
+        private void StartInterval(IntervalType type)
+        {
+            _currentIntervalFinished = false;
+            _currentInterval = type;
+            switch (type)
+            {
+                case IntervalType.Productive:
+                    _timeMaster.Pass(_pomodoroConfig.Productivity, OnIntervalEnd);
+                    break;
+                case IntervalType.ShortBreak:
+                    _timeMaster.Pass(_pomodoroConfig.ShortBreak, OnIntervalEnd);
+                    break;
+                case IntervalType.LongBreak:
+                    _timeMaster.Pass(_pomodoroConfig.LongBreak, OnIntervalEnd);
+                    break;
             }
         }
     }

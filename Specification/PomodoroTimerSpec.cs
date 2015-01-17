@@ -37,7 +37,7 @@
 
             //when
             _pomodoro.Start(config);
-            _timeMaster.CallLastCallback();
+            _timeMaster.FinishLatestInterval();
 
             //then
             Assert.That(_eventHelper.FinishedIntervals, Is.EquivalentTo(expectedIntervals));
@@ -55,11 +55,11 @@
             var expectedIntervals = new List<IntervalType> { IntervalType.Productive, IntervalType.ShortBreak };
 
             _pomodoro.Start(config);
-            _timeMaster.CallLastCallback();
+            _timeMaster.FinishLatestInterval();
 
             //when
             _pomodoro.StartNext();
-            _timeMaster.CallLastCallback();
+            _timeMaster.FinishLatestInterval();
 
             //then
             Assert.That(_eventHelper.FinishedIntervals, Is.EquivalentTo(expectedIntervals));
@@ -79,6 +79,30 @@
 
             //when
             _pomodoro.Start(config);
+        }
+
+        [Test]
+        public void ShouldGoIntoLongBreakAfterGivenAmountOfProductivityIntervals()
+        {
+            //given
+            var config = new PomodoroConfig
+            {
+                Productivity = new TimeSpan(),
+                LongBreak = new TimeSpan(),
+                LongBreakAfter = 1
+            };
+
+            _pomodoro.Start(config);
+            _timeMaster.FinishLatestInterval();
+
+            var expectedIntervals = new List<IntervalType> {IntervalType.Productive, IntervalType.LongBreak};
+
+            //when
+            _pomodoro.StartNext();
+            _timeMaster.FinishLatestInterval();
+
+            //then
+            Assert.That(_eventHelper.FinishedIntervals, Is.EquivalentTo(expectedIntervals));
         }
     }
 }

@@ -12,9 +12,14 @@
             _callback = callback;
         }
 
-        public void CallLastCallback()
+        public void FinishLatestInterval()
         {
-            _callback.Invoke();
+            if (_callback != null)
+            {
+                _callback.Invoke();
+            }
+
+            _callback = null;
         }
     }
 }

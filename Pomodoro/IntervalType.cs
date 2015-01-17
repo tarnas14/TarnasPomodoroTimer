@@ -4,6 +4,7 @@
     {
         None,
         Productive,
-        ShortBreak
+        ShortBreak,
+        LongBreak
     }
 }
