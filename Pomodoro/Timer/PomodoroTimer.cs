@@ -41,6 +41,7 @@ namespace Pomodoro.Timer
         private void StartCurrent()
         {
             _timeMaster.Pass(CurrentInterval.TimeSpan, OnIntervalEnd);
+            CurrentInterval.Started();
         }
 
         private void PreparePomodoros(PomodoroConfig config)
@@ -68,6 +69,11 @@ namespace Pomodoro.Timer
 
         public void StartNext()
         {
+            if (CurrentInterval.InProgress)
+            {
+                throw new PreviousIntervalHasNotFinishedException();
+            }
+
             _currentInterval++;
 
             if (_currentInterval == _pomodoros.Count)

@@ -133,5 +133,41 @@
             //then
             Assert.That(_eventHelper.FinishedIntervals, Is.EquivalentTo(expectedIntervals));
         }
+
+        [Test]
+        [ExpectedException(typeof(PreviousIntervalHasNotFinishedException))]
+        public void ShouldNotStartNextIfFirstIntervalHasNotFinished()
+        {
+            //given
+            var config = new PomodoroConfig
+            {
+                Productivity = new TimeSpan(),
+                LongBreak = new TimeSpan(),
+                LongBreakAfter = 1
+            };
+            _pomodoro.Start(config);
+
+            //when
+            _pomodoro.StartNext();
+        }
+
+        [Test]
+        [ExpectedException(typeof(PreviousIntervalHasNotFinishedException))]
+        public void ShouldNotStartNextIfCurrentIntervalHasNotFinished()
+        {
+            //given
+            var config = new PomodoroConfig
+            {
+                Productivity = new TimeSpan(),
+                LongBreak = new TimeSpan(),
+                LongBreakAfter = 1
+            };
+            _pomodoro.Start(config);
+            _timeMaster.FinishLatestInterval();
+            _pomodoro.StartNext();
+
+            //when
+            _pomodoro.StartNext();
+        }
     }
 }

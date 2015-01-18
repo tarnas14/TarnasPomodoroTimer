@@ -12,10 +12,16 @@ namespace Pomodoro.Timer
 
         public TimeSpan TimeSpan { get; private set; }
         public IntervalType Type { get; private set; }
+        public bool InProgress { get; private set; }
 
         public void Passed()
         {
-            
+            InProgress = false;
+        }
+
+        public void Started()
+        {
+            InProgress = true;
         }
     }
 }
