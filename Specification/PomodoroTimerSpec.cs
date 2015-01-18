@@ -11,7 +11,6 @@
     class PomodoroTimerSpec
     {
         private ControlledTimeMaster _timeMaster;
-        private TimeSpan _productivityInterval;
 
         private PomodoroEventHelper _eventHelper;
         private PomodoroTimer _pomodoro;
@@ -44,7 +43,7 @@
         }
 
         [Test]
-        public void ShouldStartShortBreakAFterEndingProductivityInterval()
+        public void ShouldStartShortBreakAfterEndingProductivityInterval()
         {
             //given
             var config = new PomodoroConfig
@@ -100,6 +99,36 @@
             //when
             _pomodoro.StartNext();
             _timeMaster.FinishLatestInterval();
+
+            //then
+            Assert.That(_eventHelper.FinishedIntervals, Is.EquivalentTo(expectedIntervals));
+        }
+
+        [Test]
+        public void ShouldStartFromTheBeginningAfterLongBreak()
+        {
+            //given
+            var config = new PomodoroConfig
+            {
+                Productivity = new TimeSpan(),
+                LongBreak = new TimeSpan(),
+                LongBreakAfter = 1
+            };
+            _pomodoro.Start(config);
+            _timeMaster.FinishLatestInterval(); //stop first productive
+            _pomodoro.StartNext();
+            _timeMaster.FinishLatestInterval(); //stop long break
+
+            var expectedIntervals = new List<IntervalType>
+            {
+                IntervalType.Productive,
+                IntervalType.LongBreak,
+                IntervalType.Productive
+            };
+
+            //when
+            _pomodoro.StartNext();
+            _timeMaster.FinishLatestInterval(); //stop productive again
 
             //then
             Assert.That(_eventHelper.FinishedIntervals, Is.EquivalentTo(expectedIntervals));
