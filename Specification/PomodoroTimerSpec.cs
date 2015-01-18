@@ -1,6 +1,7 @@
 ﻿namespace Specification
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using Halp;
     using NUnit.Framework;
@@ -136,6 +137,38 @@
 
             //when
             _pomodoro.StartNext();
+        }
+
+        [Test]
+        public void ShouldAllowInterruptingFirstInterval()
+        {
+            //given
+            _pomodoro.StartNext();
+
+            //when
+            _pomodoro.Interrupt();
+            _timeMaster.FinishLatestInterval();
+
+            //then
+            Assert.That(_eventHelper.FinishedIntervals, Is.Empty);
+        }
+
+        [Test]
+        public void ShouldAllowInterruptingIntervals()
+        {
+            //given
+            _pomodoro.StartNext();
+            _timeMaster.FinishLatestInterval();
+            _pomodoro.StartNext();
+
+            var expectedIntervals = new List<IntervalType> { IntervalType.Productive };
+
+            //when
+            _pomodoro.Interrupt();
+            _timeMaster.FinishLatestInterval();
+
+            //then
+            Assert.That(_eventHelper.FinishedIntervals, Is.EquivalentTo(expectedIntervals));
         }
     }
 }

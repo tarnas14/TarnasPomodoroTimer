@@ -36,6 +36,11 @@ namespace Pomodoro.Timer
 
         private void OnIntervalEnd()
         {
+            if (!CurrentInterval.InProgress)
+            {
+                return;
+            }
+
             CurrentInterval.Passed();
 
             if (IntervalFinished != null)
@@ -75,6 +80,11 @@ namespace Pomodoro.Timer
             {
                 return _currentInterval == -1 ? null : _pomodoros[_currentInterval];
             }
+        }
+
+        public void Interrupt()
+        {
+            CurrentInterval.Interrupt();
         }
     }
 }

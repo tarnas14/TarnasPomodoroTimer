@@ -23,5 +23,10 @@ namespace Pomodoro.Timer
         {
             InProgress = true;
         }
+
+        public void Interrupt()
+        {
+            InProgress = false;
+        }
     }
 }
