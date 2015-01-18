@@ -6,37 +6,14 @@ namespace Pomodoro.Timer
 
     public class PomodoroTimer
     {
-        private readonly TimeMaster _timeMaster;
-
-        private int _currentInterval;
-        private IList<Interval> _pomodoros;
-
-        private Interval CurrentInterval
+        public PomodoroTimer(TimeMaster timeMaster, PomodoroConfig config)
         {
-            get
-            {
-                return _pomodoros[_currentInterval];
-            }
-        }
-
-        public PomodoroTimer(TimeMaster timeMaster)
-        {
+            _currentInterval = -1;
             _timeMaster = timeMaster;
+            PreparePomodoros(config);
         }
 
         public event EventHandler<IntervalFinishedEventArgs> IntervalFinished;
-
-        public void Start(PomodoroConfig config)
-        {
-            if (_pomodoros != null)
-            {
-                throw new CannotStartPomodoroMultipleTimesException();
-            }
-
-            PreparePomodoros(config);
-
-            StartCurrent();
-        }
 
         private void StartCurrent()
         {
@@ -69,19 +46,35 @@ namespace Pomodoro.Timer
 
         public void StartNext()
         {
-            if (CurrentInterval.InProgress)
+            if (CurrentInterval != null && CurrentInterval.InProgress)
             {
                 throw new PreviousIntervalHasNotFinishedException();
             }
+            
+            SetNextInterval();
 
+            StartCurrent();
+        }
+
+        private void SetNextInterval()
+        {
             _currentInterval++;
 
             if (_currentInterval == _pomodoros.Count)
             {
                 _currentInterval = 0;
             }
+        }
 
-            StartCurrent();
+        private readonly TimeMaster _timeMaster;
+        private int _currentInterval;
+        private IList<Interval> _pomodoros;
+        private Interval CurrentInterval
+        {
+            get
+            {
+                return _currentInterval == -1 ? null : _pomodoros[_currentInterval];
+            }
         }
     }
 }

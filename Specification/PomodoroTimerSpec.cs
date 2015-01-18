@@ -14,13 +14,26 @@
 
         private PomodoroEventHelper _eventHelper;
         private PomodoroTimer _pomodoro;
+        private PomodoroConfig _config;
 
         [SetUp]
         public void Setup()
         {
             _eventHelper = new PomodoroEventHelper();
             _timeMaster = new ControlledTimeMaster();
-            _pomodoro = new PomodoroTimer(_timeMaster);
+            _config = new PomodoroConfig
+            {
+                LongBreak = new TimeSpan(),
+                Productivity = new TimeSpan(),
+                ShortBreak = new TimeSpan(),
+                LongBreakAfter = 4
+            };
+            SetupPomodoro();
+        }
+
+        private void SetupPomodoro()
+        {
+            _pomodoro = new PomodoroTimer(_timeMaster, _config);
             _pomodoro.IntervalFinished += _eventHelper.EndOfInterval;
         }
 
@@ -28,14 +41,10 @@
         public void ShouldStartWithProductivityInterval()
         {
             //given
-            var config = new PomodoroConfig
-            {
-                Productivity = new TimeSpan()
-            };
             var expectedIntervals = new List<IntervalType> { IntervalType.Productive };
 
             //when
-            _pomodoro.Start(config);
+            _pomodoro.StartNext();
             _timeMaster.FinishLatestInterval();
 
             //then
@@ -46,14 +55,9 @@
         public void ShouldStartShortBreakAfterEndingProductivityInterval()
         {
             //given
-            var config = new PomodoroConfig
-            {
-                Productivity = new TimeSpan(),
-                ShortBreak = new TimeSpan()
-            };
             var expectedIntervals = new List<IntervalType> { IntervalType.Productive, IntervalType.ShortBreak };
 
-            _pomodoro.Start(config);
+            _pomodoro.StartNext();
             _timeMaster.FinishLatestInterval();
 
             //when
@@ -65,33 +69,13 @@
         }
 
         [Test]
-        [ExpectedException(typeof(CannotStartPomodoroMultipleTimesException))]
-        public void ShouldNotStartPomodoroTwice()
-        {
-            //given
-            var config = new PomodoroConfig
-            {
-                Productivity = new TimeSpan(),
-                ShortBreak = new TimeSpan()
-            };
-            _pomodoro.Start(config);
-
-            //when
-            _pomodoro.Start(config);
-        }
-
-        [Test]
         public void ShouldGoIntoLongBreakAfterGivenAmountOfProductivityIntervals()
         {
             //given
-            var config = new PomodoroConfig
-            {
-                Productivity = new TimeSpan(),
-                LongBreak = new TimeSpan(),
-                LongBreakAfter = 1
-            };
+            _config.LongBreakAfter = 1;
+            SetupPomodoro();
 
-            _pomodoro.Start(config);
+            _pomodoro.StartNext();
             _timeMaster.FinishLatestInterval();
 
             var expectedIntervals = new List<IntervalType> {IntervalType.Productive, IntervalType.LongBreak};
@@ -105,16 +89,12 @@
         }
 
         [Test]
-        public void ShouldStartFromTheBeginningAfterLongBreak()
+        public void ShouldStartFromTheBeginningAfterWholeCycle()
         {
             //given
-            var config = new PomodoroConfig
-            {
-                Productivity = new TimeSpan(),
-                LongBreak = new TimeSpan(),
-                LongBreakAfter = 1
-            };
-            _pomodoro.Start(config);
+            _config.LongBreakAfter = 1;
+            SetupPomodoro();
+            _pomodoro.StartNext();
             _timeMaster.FinishLatestInterval(); //stop first productive
             _pomodoro.StartNext();
             _timeMaster.FinishLatestInterval(); //stop long break
@@ -139,13 +119,7 @@
         public void ShouldNotStartNextIfFirstIntervalHasNotFinished()
         {
             //given
-            var config = new PomodoroConfig
-            {
-                Productivity = new TimeSpan(),
-                LongBreak = new TimeSpan(),
-                LongBreakAfter = 1
-            };
-            _pomodoro.Start(config);
+            _pomodoro.StartNext();
 
             //when
             _pomodoro.StartNext();
@@ -156,13 +130,7 @@
         public void ShouldNotStartNextIfCurrentIntervalHasNotFinished()
         {
             //given
-            var config = new PomodoroConfig
-            {
-                Productivity = new TimeSpan(),
-                LongBreak = new TimeSpan(),
-                LongBreakAfter = 1
-            };
-            _pomodoro.Start(config);
+            _pomodoro.StartNext();
             _timeMaster.FinishLatestInterval();
             _pomodoro.StartNext();
 

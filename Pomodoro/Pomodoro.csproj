@@ -39,7 +39,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CannotStartPomodoroMultipleTimesException.cs" />
     <Compile Include="IntervalFinishedEventArgs.cs" />
     <Compile Include="IntervalType.cs" />
     <Compile Include="PomodoroConfig.cs" />
