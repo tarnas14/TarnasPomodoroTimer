@@ -14,12 +14,12 @@ namespace Pomodoro.Timer
         public IntervalType Type { get; private set; }
         public bool InProgress { get; private set; }
 
-        public void Passed()
+        public void Finish()
         {
             InProgress = false;
         }
 
-        public void Started()
+        public void Start()
         {
             InProgress = true;
         }

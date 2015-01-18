@@ -170,5 +170,41 @@
             //then
             Assert.That(_eventHelper.FinishedIntervals, Is.EquivalentTo(expectedIntervals));
         }
+
+        [Test]
+        public void ShouldAllowRestartingInterruptedFirstInterval()
+        {
+            //given
+            _pomodoro.StartNext();
+            _pomodoro.Interrupt();
+
+            var expectedIntervals = new List<IntervalType> {IntervalType.Productive};
+
+            //when
+            _pomodoro.Restart();
+            _timeMaster.FinishLatestInterval();
+
+            //then
+            Assert.That(_eventHelper.FinishedIntervals, Is.EquivalentTo(expectedIntervals));
+        }
+
+        [Test]
+        public void ShouldRestartInterruptedIntervalse()
+        {
+            //given
+            _pomodoro.StartNext();
+            _timeMaster.FinishLatestInterval();
+            _pomodoro.StartNext();
+            _pomodoro.Interrupt();
+
+            var expectedIntervals = new List<IntervalType> { IntervalType.Productive, IntervalType.ShortBreak };
+
+            //when
+            _pomodoro.Restart();
+            _timeMaster.FinishLatestInterval();
+
+            //then
+            Assert.That(_eventHelper.FinishedIntervals, Is.EquivalentTo(expectedIntervals));
+        }
     }
 }
