@@ -1,7 +1,6 @@
 ﻿namespace Specification
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using Halp;
     using NUnit.Framework;
@@ -36,6 +35,7 @@
         {
             _pomodoro = new PomodoroTimer(_timeMaster, _config);
             _pomodoro.IntervalFinished += _eventHelper.EndOfInterval;
+            _pomodoro.Tick += _eventHelper.OnTick;
         }
 
         [Test]
@@ -189,7 +189,7 @@
         }
 
         [Test]
-        public void ShouldRestartInterruptedIntervalse()
+        public void ShouldRestartInterruptedIntervals()
         {
             //given
             _pomodoro.StartNext();
@@ -205,6 +205,20 @@
 
             //then
             Assert.That(_eventHelper.FinishedIntervals, Is.EquivalentTo(expectedIntervals));
+        }
+
+        [Test]
+        public void ShouldNotifyAboutTimeMasterTicks()
+        {
+            //given
+            _pomodoro.StartNext();
+
+            //when
+            _timeMaster.DoTick(new TimeRemainingEventArgs(TimeSpan.FromDays(2)));
+            _timeMaster.DoTick(new TimeRemainingEventArgs(TimeSpan.FromDays(1)));
+
+            //then
+            Assert.That(_eventHelper.TicksCount, Is.EqualTo(2));
         }
     }
 }

@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using Pomodoro;
+    using Pomodoro.Timer;
 
     internal class PomodoroEventHelper
     {
@@ -16,5 +17,12 @@
         {
             FinishedIntervals.Add(e.Type);
         }
+
+        public void OnTick(object sender, TimeRemainingEventArgs e)
+        {
+            TicksCount++;
+        }
+
+        public int TicksCount { get; private set; }
     }
 }

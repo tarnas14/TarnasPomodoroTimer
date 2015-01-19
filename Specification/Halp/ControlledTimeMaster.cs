@@ -2,10 +2,12 @@
 {
     using System;
     using Pomodoro;
+    using Pomodoro.Timer;
 
     internal class ControlledTimeMaster : TimeMaster
     {
         private Action _callback;
+        public event EventHandler<TimeRemainingEventArgs> Tick;
 
         public void Pass(TimeSpan timeInterval, Action callback)
         {
@@ -20,6 +22,14 @@
             }
 
             _callback = null;
+        }
+
+        public void DoTick(TimeRemainingEventArgs eventArgs)
+        {
+            if (Tick != null)
+            {
+                Tick(this, eventArgs);
+            }
         }
     }
 }

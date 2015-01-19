@@ -2,7 +2,6 @@ namespace Pomodoro.Timer
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
 
     public class PomodoroTimer
     {
@@ -14,6 +13,11 @@ namespace Pomodoro.Timer
         }
 
         public event EventHandler<IntervalFinishedEventArgs> IntervalFinished;
+        public event EventHandler<TimeRemainingEventArgs> Tick
+        {
+            add { _timeMaster.Tick += value; }
+            remove { _timeMaster.Tick -= value; }
+        }
 
         private void StartCurrent()
         {
