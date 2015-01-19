@@ -5,9 +5,14 @@ namespace Pomodoro.Timer
 
     public class PomodoroTimer
     {
+
+        private readonly TimeMaster _timeMaster;
+        private int _currentInterval;
+        private IList<Interval> _pomodoros;
+        private bool _started;
+
         public PomodoroTimer(TimeMaster timeMaster, PomodoroConfig config)
         {
-            _currentInterval = -1;
             _timeMaster = timeMaster;
             PreparePomodoros(config);
         }
@@ -55,12 +60,19 @@ namespace Pomodoro.Timer
 
         public void StartNext()
         {
-            if (CurrentInterval != null && CurrentInterval.InProgress)
+            if (CurrentInterval.InProgress)
             {
                 throw new PreviousIntervalHasNotFinishedException();
             }
-            
-            SetNextInterval();
+
+            if (_started)
+            {
+                SetNextInterval();
+            }
+            else
+            {
+                _started = true;
+            }
 
             StartCurrent();
         }
@@ -75,14 +87,11 @@ namespace Pomodoro.Timer
             }
         }
 
-        private readonly TimeMaster _timeMaster;
-        private int _currentInterval;
-        private IList<Interval> _pomodoros;
-        private Interval CurrentInterval
+        public Interval CurrentInterval
         {
             get
             {
-                return _currentInterval == -1 ? null : _pomodoros[_currentInterval];
+                return _pomodoros[_currentInterval];
             }
         }
 

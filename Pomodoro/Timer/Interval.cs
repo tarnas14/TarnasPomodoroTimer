@@ -2,7 +2,7 @@ namespace Pomodoro.Timer
 {
     using System;
 
-    internal class Interval
+    public class Interval
     {
         public Interval(IntervalType intervalType, TimeSpan timeSpan)
         {

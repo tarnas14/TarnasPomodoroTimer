@@ -8,6 +8,7 @@
     {
         private readonly PomodoroTimer _timer;
         private readonly PomodoroConfig _config;
+        private int _row;
 
         public Ui(PomodoroTimer timer, PomodoroConfig config)
         {
@@ -31,18 +32,22 @@
             Console.WriteLine("LongBreak - {0}", _config.LongBreak);
             Console.WriteLine("Long break after {0} productive intervals", _config.LongBreakAfter);
             Console.WriteLine("Type 'quit' to... lol... quit");
+            Console.WriteLine("");
+            _row = Console.CursorTop;
         }
 
         public void IntervalFinished(object sender, IntervalFinishedEventArgs e)
         {
-            Console.WriteLine(e.Type + " ended!");
+            Console.SetCursorPosition(0, _row);
+            Console.Write("\r{0} has ended!          ", e.Type);
             Console.ReadLine();
             _timer.StartNext();
         }
 
         public void OnTick(object sender, TimeRemainingEventArgs e)
         {
-            Console.WriteLine("current interval remaining: {0}", e.TimeRemaining);
+            Console.SetCursorPosition(0, _row);
+            Console.Write("\r{0} remaining: {1}", _timer.CurrentInterval.Type, e.TimeRemaining);
         }
     }
 }

@@ -9,7 +9,7 @@
         static void Main(string[] args)
         {
             var configFactory = new ConfigFactory();
-            var config = configFactory.GetConfig(new []{"25", "5", "15", "4"});
+            var config = configFactory.GetConfig(new []{"1", "1", "1", "4"});
             if (args.Count() == 4)
             {
                 config = configFactory.GetConfig(args);
