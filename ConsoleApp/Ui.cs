@@ -1,8 +1,8 @@
 ﻿namespace ConsoleApp
 {
-    using global::Ui;
     using Pomodoro;
     using Pomodoro.Timer;
+    using Tarnas.ConsoleUi;
     using Console = System.Console;
 
     internal class Ui : Subscriber
@@ -36,8 +36,8 @@
             Console.WriteLine("LongBreak - {0}", _config.LongBreak);
             Console.WriteLine("Long break after {0} productive intervals", _config.LongBreakAfter);
             Console.WriteLine("Type 'quit' to... lol... quit");
-            Console.WriteLine("");
             _infoRowIndex = Console.CursorTop;
+            Console.WriteLine("");
             Console.WriteLine("");
             Console.WriteLine("");
         }

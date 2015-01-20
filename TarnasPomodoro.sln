@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp", "ConsoleApp\Co
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3247E81C-9C83-468A-A942-483CA40DDCEE}"
 	ProjectSection(SolutionItems) = preProject
-		Ui.dll = Ui.dll
+		Tarnas.ConsoleUi.dll = Tarnas.ConsoleUi.dll
 	EndProjectSection
 EndProject
 Global

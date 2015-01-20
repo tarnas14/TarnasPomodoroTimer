@@ -1,8 +1,8 @@
 ﻿namespace ConsoleApp
 {
     using System.Linq;
-    using global::Ui;
     using Pomodoro.Timer;
+    using Tarnas.ConsoleUi;
 
     class Program
     {
