@@ -1,7 +1,7 @@
 ﻿namespace ConsoleApp
 {
-    using System;
     using System.Linq;
+    using global::Ui;
     using Pomodoro.Timer;
 
     class Program
@@ -18,9 +18,20 @@
             var timeMaster = new SystemTimeMaster();
             var timer = new PomodoroTimer(timeMaster, config);
 
-            new Ui(timer, config).Start();
+            var consoleUi = new ConsoleUi(new CleverFactory());
 
-            while (Console.ReadLine() != "quit"){}
+            var ui = new Ui(timer, config);
+            consoleUi.Subscribe(ui, Ui.StartCommand);
+            consoleUi.Subscribe(ui, Ui.NextCommand);
+            consoleUi.Subscribe(ui, Ui.InterruptCommand);
+            consoleUi.Subscribe(ui, Ui.RestartCommand);
+
+            string input = string.Empty;
+            while (input != "/quit")
+            {
+                input = global::System.Console.ReadLine();
+                consoleUi.UserInput(input);
+            }
         }
     }
 }

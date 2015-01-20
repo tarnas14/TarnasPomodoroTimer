@@ -1,14 +1,22 @@
 ﻿namespace ConsoleApp
 {
-    using System;
+    using global::Ui;
     using Pomodoro;
     using Pomodoro.Timer;
+    using Console = System.Console;
 
-    internal class Ui
+    internal class Ui : Subscriber
     {
+        public const string StartCommand = "start";
+        public const string NextCommand = "next";
+        public const string InterruptCommand = "stahp";
+        public const string RestartCommand = "restart";
+
         private readonly PomodoroTimer _timer;
         private readonly PomodoroConfig _config;
-        private int _row;
+        private int _infoRowIndex;
+        private int _savedRow;
+        private int _savedColumn;
 
         public Ui(PomodoroTimer timer, PomodoroConfig config)
         {
@@ -16,15 +24,11 @@
             _config = config;
             timer.IntervalFinished += IntervalFinished;
             timer.Tick += OnTick;
+
+            Introduction();
         }
 
-        public void Start()
-        {
-            Announce();
-            _timer.StartNext();
-        }
-
-        private void Announce()
+        private void Introduction()
         {
             Console.WriteLine("starting pomodoro timer configuration:");
             Console.WriteLine("Productivity - {0}", _config.Productivity);
@@ -33,21 +37,95 @@
             Console.WriteLine("Long break after {0} productive intervals", _config.LongBreakAfter);
             Console.WriteLine("Type 'quit' to... lol... quit");
             Console.WriteLine("");
-            _row = Console.CursorTop;
+            _infoRowIndex = Console.CursorTop;
+            Console.WriteLine("");
+            Console.WriteLine("");
         }
+
 
         public void IntervalFinished(object sender, IntervalFinishedEventArgs e)
         {
-            Console.SetCursorPosition(0, _row);
-            Console.Write("\r{0} has ended!          ", e.Type);
-            Console.ReadLine();
-            _timer.StartNext();
+            Announce(string.Format("{0} has ended!", e.Type));
         }
 
         public void OnTick(object sender, TimeRemainingEventArgs e)
         {
-            Console.SetCursorPosition(0, _row);
-            Console.Write("\r{0} remaining: {1}", _timer.CurrentInterval.Type, e.TimeRemaining);
+            Announce(string.Format("{0} remaining: {1}", _timer.CurrentInterval.Type, e.TimeRemaining));
+        }
+
+        private void Announce(string announcement)
+        {
+            SaveCursorAndRewindConsoleTo(_infoRowIndex);
+            ClearCurrentLine();
+            Console.WriteLine(announcement);
+            RevertCursor();
+        }
+
+        private static void ClearCurrentLine()
+        {
+            Console.Write("\r                                                         \r");
+        }
+
+        private void SaveCursorAndRewindConsoleTo(int infoRowIndex)
+        {
+            _savedRow = Console.CursorTop;
+            _savedColumn = Console.CursorLeft;
+            Console.SetCursorPosition(0, infoRowIndex);
+        }
+
+        private void RevertCursor()
+        {
+            Console.SetCursorPosition(_savedColumn, _savedRow);
+        }
+
+        public void Execute(UserCommand userCommand)
+        {
+            try
+            {
+                ClearTheLineCommandIsOn();
+                switch (userCommand.Name)
+                {
+                    case StartCommand:
+                        StartNext();
+                        break;
+                    case NextCommand:
+                        StartNext();
+                        break;
+                    case InterruptCommand:
+                        Interrupt();
+                        break;
+                    case RestartCommand:
+                        Restart();
+                        break;
+                }
+            }
+            catch (PomodoroException exception)
+            {
+                SaveCursorAndRewindConsoleTo(_infoRowIndex);
+                Console.WriteLine("ERROR:");
+                Console.WriteLine(exception.Message);
+            }
+        }
+
+        private void ClearTheLineCommandIsOn()
+        {
+            Console.SetCursorPosition(0, Console.CursorTop-1);
+            ClearCurrentLine();
+        }
+
+        private void Restart()
+        {
+            _timer.Restart();
+        }
+
+        private void Interrupt()
+        {
+            _timer.Interrupt();
+        }
+
+        private void StartNext()
+        {
+            _timer.StartNext();
         }
     }
 }
