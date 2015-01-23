@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Halp;
     using NUnit.Framework;
     using Pomodoro;
@@ -38,6 +39,11 @@
             _pomodoro.Tick += _eventHelper.OnTick;
         }
 
+        private IList<IntervalType> TypesOfFinishedIntervals
+        {
+            get { return _eventHelper.FinishedIntervals.Select(interval => interval.Type).ToList(); }
+        }
+
         [Test]
         public void ShouldStartWithProductivityInterval()
         {
@@ -49,7 +55,7 @@
             _timeMaster.FinishLatestInterval();
 
             //then
-            Assert.That(_eventHelper.FinishedIntervals, Is.EquivalentTo(expectedIntervals));
+            Assert.That(TypesOfFinishedIntervals, Is.EquivalentTo(expectedIntervals));
         }
 
         [Test]
@@ -66,7 +72,7 @@
             _timeMaster.FinishLatestInterval();
 
             //then
-            Assert.That(_eventHelper.FinishedIntervals, Is.EquivalentTo(expectedIntervals));
+            Assert.That(TypesOfFinishedIntervals, Is.EquivalentTo(expectedIntervals));
         }
 
         [Test]
@@ -86,7 +92,7 @@
             _timeMaster.FinishLatestInterval();
 
             //then
-            Assert.That(_eventHelper.FinishedIntervals, Is.EquivalentTo(expectedIntervals));
+            Assert.That(TypesOfFinishedIntervals, Is.EquivalentTo(expectedIntervals));
         }
 
         [Test]
@@ -112,7 +118,7 @@
             _timeMaster.FinishLatestInterval(); //stop productive again
 
             //then
-            Assert.That(_eventHelper.FinishedIntervals, Is.EquivalentTo(expectedIntervals));
+            Assert.That(TypesOfFinishedIntervals, Is.EquivalentTo(expectedIntervals));
         }
 
         [Test]
@@ -168,7 +174,7 @@
             _timeMaster.FinishLatestInterval();
 
             //then
-            Assert.That(_eventHelper.FinishedIntervals, Is.EquivalentTo(expectedIntervals));
+            Assert.That(TypesOfFinishedIntervals, Is.EquivalentTo(expectedIntervals));
         }
 
         [Test]
@@ -185,7 +191,7 @@
             _timeMaster.FinishLatestInterval();
 
             //then
-            Assert.That(_eventHelper.FinishedIntervals, Is.EquivalentTo(expectedIntervals));
+            Assert.That(TypesOfFinishedIntervals, Is.EquivalentTo(expectedIntervals));
         }
 
         [Test]
@@ -204,7 +210,7 @@
             _timeMaster.FinishLatestInterval();
 
             //then
-            Assert.That(_eventHelper.FinishedIntervals, Is.EquivalentTo(expectedIntervals));
+            Assert.That(TypesOfFinishedIntervals, Is.EquivalentTo(expectedIntervals));
         }
 
         [Test]
@@ -214,11 +220,30 @@
             _pomodoro.StartNext();
 
             //when
-            _timeMaster.DoTick(new TimeRemainingEventArgs(TimeSpan.FromDays(2)));
-            _timeMaster.DoTick(new TimeRemainingEventArgs(TimeSpan.FromDays(1)));
+            _timeMaster.DoTick();
+            _timeMaster.DoTick();
 
             //then
-            Assert.That(_eventHelper.TicksCount, Is.EqualTo(2));
+            Assert.That(_eventHelper.Ticks.Count, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void ShouldIncludeCurrentIntervalTypeInTickNotification()
+        {
+            //given
+            _pomodoro.StartNext();
+            _timeMaster.DoTick();
+            _timeMaster.FinishLatestInterval();
+            _pomodoro.StartNext();
+            _timeMaster.DoTick();
+
+            var expectedNotification = new List<IntervalType> {IntervalType.Productive, IntervalType.ShortBreak};
+
+            //when
+            var intervals = _eventHelper.Ticks.Select(tick => tick.IntervalType);
+
+            //then
+            Assert.That(intervals, Is.EquivalentTo(expectedNotification));
         }
 
         [Test]
@@ -236,6 +261,29 @@
             //then
             Assert.That(actual.Type, Is.EqualTo(expected.IntervalType));
             Assert.That(actual.TimeSpan, Is.EqualTo(expected.Length));
+        }
+
+        [Test]
+        public void ShouldHoldInformationAboutNextIntervalInIntervalFinishedNotification()
+        {
+            //given
+            _pomodoro.StartNext();
+            _timeMaster.FinishLatestInterval();
+            _pomodoro.StartNext();
+            _timeMaster.FinishLatestInterval();
+
+            var expectedNextIntervalIndicators = new List<IntervalType>
+            {
+                IntervalType.ShortBreak,
+                IntervalType.Productive
+            };
+
+            //when
+            var actualNextIntervalIndicators = _eventHelper.FinishedIntervals.Select(interval => interval.NextIntervalType).ToList();
+
+            //then
+            Assert.That(actualNextIntervalIndicators, Is.EquivalentTo(expectedNextIntervalIndicators));
+
         }
     }
 }

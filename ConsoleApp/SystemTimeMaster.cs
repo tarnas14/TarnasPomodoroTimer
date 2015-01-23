@@ -29,7 +29,10 @@
 
             if (Tick != null)
             {
-                Tick(this, new TimeRemainingEventArgs(_timeLeft));
+                Tick(this, new TimeRemainingEventArgs
+                {
+                    TimeRemaining = _timeLeft
+                });
             }
         }
 

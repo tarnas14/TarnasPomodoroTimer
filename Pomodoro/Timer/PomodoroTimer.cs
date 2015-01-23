@@ -14,15 +14,21 @@ namespace Pomodoro.Timer
         public PomodoroTimer(TimeMaster timeMaster, PomodoroConfig config)
         {
             _timeMaster = timeMaster;
+            _timeMaster.Tick += OnTick;
             PreparePomodoros(config);
         }
 
-        public event EventHandler<IntervalFinishedEventArgs> IntervalFinished;
-        public event EventHandler<TimeRemainingEventArgs> Tick
+        private void OnTick(object sender, TimeRemainingEventArgs e)
         {
-            add { _timeMaster.Tick += value; }
-            remove { _timeMaster.Tick -= value; }
+            if (Tick != null)
+            {
+                e.IntervalType = CurrentInterval.Type;
+                Tick(this, e);
+            }
         }
+
+        public event EventHandler<IntervalFinishedEventArgs> IntervalFinished;
+        public event EventHandler<TimeRemainingEventArgs> Tick;
 
         private void StartCurrent()
         {
@@ -54,7 +60,11 @@ namespace Pomodoro.Timer
 
             if (IntervalFinished != null)
             {
-                IntervalFinished(this, new IntervalFinishedEventArgs{ Type = CurrentInterval.Type });
+                IntervalFinished(this, new IntervalFinishedEventArgs
+                {
+                    Type = CurrentInterval.Type,
+                    NextIntervalType = NextQueuedInterval
+                });
             }
         }
 
@@ -84,6 +94,21 @@ namespace Pomodoro.Timer
             if (_currentInterval == _pomodoros.Count)
             {
                 _currentInterval = 0;
+            }
+        }
+
+        private IntervalType NextQueuedInterval
+        {
+            get
+            {
+                var nextInterval = _currentInterval + 1;
+
+                if (nextInterval == _pomodoros.Count)
+                {
+                    nextInterval = 0;
+                }
+
+                return _pomodoros[nextInterval].Type;
             }
         }
 

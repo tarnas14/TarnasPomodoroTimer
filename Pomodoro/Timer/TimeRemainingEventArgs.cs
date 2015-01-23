@@ -4,11 +4,7 @@ namespace Pomodoro.Timer
 
     public class TimeRemainingEventArgs : EventArgs
     {
-        public TimeRemainingEventArgs(TimeSpan timeRemaining)
-        {
-            TimeRemaining = timeRemaining;
-        }
-
-        public TimeSpan TimeRemaining { get; private set; }
+        public TimeSpan TimeRemaining { get; set; }
+        public IntervalType IntervalType { get; set; }
     }
 }

@@ -24,11 +24,11 @@
             _callback = null;
         }
 
-        public void DoTick(TimeRemainingEventArgs eventArgs)
+        public void DoTick()
         {
             if (Tick != null)
             {
-                Tick(this, eventArgs);
+                Tick(this, new TimeRemainingEventArgs{});
             }
         }
     }
