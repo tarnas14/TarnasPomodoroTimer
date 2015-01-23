@@ -1,6 +1,7 @@
 ﻿namespace ConsoleApp
 {
     using System.Linq;
+    using Notifications;
     using Pomodoro.Timer;
     using Tarnas.ConsoleUi;
 
@@ -18,6 +19,8 @@
             var timeMaster = new SystemTimeMaster();
             var timer = new PomodoroTimer(timeMaster, config);
 
+            AddNotifications(timer);
+
             var consoleUi = new ConsoleUi(new CleverFactory());
 
             var ui = new Ui(timer, config);
@@ -29,9 +32,16 @@
             string input = string.Empty;
             while (input != "/quit")
             {
-                input = global::System.Console.ReadLine();
+                input = System.Console.ReadLine();
                 consoleUi.UserInput(input);
             }
+        }
+
+        private static void AddNotifications(PomodoroTimer timer)
+        {
+            var trayNotification = new TrayBubble();
+            timer.IntervalFinished += trayNotification.IntervalFinished;
+            timer.Tick += trayNotification.OnTick;
         }
     }
 }
