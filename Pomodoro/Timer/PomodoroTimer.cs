@@ -30,6 +30,7 @@ namespace Pomodoro.Timer
         public event EventHandler<IntervalFinishedEventArgs> IntervalFinished;
         public event EventHandler<TimeRemainingEventArgs> Tick;
         public event EventHandler<IntervalStartedEventArgs> IntervalStarted;
+        public event EventHandler<IntervalInterruptedEventArgs> IntervalInterrupted;
 
         private void StartCurrent()
         {
@@ -133,6 +134,14 @@ namespace Pomodoro.Timer
         public void Interrupt()
         {
             CurrentInterval.Interrupt();
+
+            if (IntervalInterrupted != null)
+            {
+                IntervalInterrupted(this, new IntervalInterruptedEventArgs
+                {
+                    Type = CurrentInterval.Type
+                });
+            }
         }
 
         public void Restart()
