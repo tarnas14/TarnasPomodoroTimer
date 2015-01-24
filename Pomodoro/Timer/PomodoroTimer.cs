@@ -29,11 +29,21 @@ namespace Pomodoro.Timer
 
         public event EventHandler<IntervalFinishedEventArgs> IntervalFinished;
         public event EventHandler<TimeRemainingEventArgs> Tick;
+        public event EventHandler<IntervalStartedEventArgs> IntervalStarted;
 
         private void StartCurrent()
         {
             _timeMaster.Pass(CurrentInterval.TimeSpan, OnIntervalEnd);
             CurrentInterval.Start();
+
+            if (IntervalStarted != null)
+            {
+                IntervalStarted(this, new IntervalStartedEventArgs
+                {
+                    Type = CurrentInterval.Type,
+                    Duration = CurrentInterval.TimeSpan
+                });
+            }
         }
 
         private void PreparePomodoros(PomodoroConfig config)

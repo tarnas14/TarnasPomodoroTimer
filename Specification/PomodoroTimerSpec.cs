@@ -36,6 +36,7 @@
         {
             _pomodoro = new PomodoroTimer(_timeMaster, _config);
             _pomodoro.IntervalFinished += _eventHelper.EndOfInterval;
+            _pomodoro.IntervalStarted += _eventHelper.StartOfInterval;
             _pomodoro.Tick += _eventHelper.OnTick;
         }
 
@@ -284,6 +285,25 @@
             //then
             Assert.That(actualNextIntervalIndicators, Is.EquivalentTo(expectedNextIntervalIndicators));
 
+        }
+
+        [Test]
+        public void ShouldNotifyAboutStartedInterval()
+        {
+            //given
+            _pomodoro.StartNext();
+
+            const IntervalType expectedType = IntervalType.Productive;
+            var expectedDuration = _config.Productivity;
+
+            //when
+            var startEvents = _eventHelper.StartedIntervals;
+
+            //then
+            Assert.That(startEvents.Count, Is.EqualTo(1));
+            var firstStartEvent = startEvents.First();
+            Assert.That(firstStartEvent.Type, Is.EqualTo(expectedType));
+            Assert.That(firstStartEvent.Duration, Is.EqualTo(expectedDuration));
         }
     }
 }
