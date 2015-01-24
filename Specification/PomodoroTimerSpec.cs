@@ -324,5 +324,26 @@
             var firstInterruptEvent = interruptEvents.First();
             Assert.That(firstInterruptEvent.Type, Is.EqualTo(expectedType));
         }
+
+        [Test]
+        public void ShouldFireStartEventWhenRestartingInterval()
+        {
+            //given
+            _pomodoro.StartNext();
+            _pomodoro.Interrupt();
+            _pomodoro.Restart();
+
+            const IntervalType expectedType = IntervalType.Productive;
+            var expectedDuration = _config.Productivity;
+
+            //when
+            var startEvents = _eventHelper.StartedIntervals;
+
+            //then
+            Assert.That(startEvents.Count, Is.EqualTo(2));
+            var restartEvent = startEvents[1];
+            Assert.That(restartEvent.Type, Is.EqualTo(expectedType));
+            Assert.That(restartEvent.Duration, Is.EqualTo(expectedDuration));
+        }
     }
 }
