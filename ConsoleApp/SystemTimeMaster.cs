@@ -57,5 +57,10 @@
         }
 
         public event EventHandler<TimeRemainingEventArgs> Tick;
+        public void Stop()
+        {
+            _secondTimer.Stop();
+            _currentTimer.Stop();
+        }
     }
 }

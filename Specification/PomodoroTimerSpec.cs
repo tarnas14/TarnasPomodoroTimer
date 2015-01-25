@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using Halp;
+    using Moq;
     using NUnit.Framework;
     using Pomodoro;
     using Pomodoro.Timer;
@@ -344,6 +345,19 @@
             var restartEvent = startEvents[1];
             Assert.That(restartEvent.Type, Is.EqualTo(expectedType));
             Assert.That(restartEvent.Duration, Is.EqualTo(expectedDuration));
+        }
+
+        [Test]
+        public void ShouldStopTimerWhenIntervalIsInterrupted()
+        {
+            //given
+            _pomodoro.StartNext();
+
+            //when
+            _pomodoro.Interrupt();
+
+            //then
+            Assert.That(_timeMaster.Ticking, Is.False);
         }
     }
 }

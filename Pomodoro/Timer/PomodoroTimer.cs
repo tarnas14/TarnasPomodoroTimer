@@ -134,6 +134,7 @@ namespace Pomodoro.Timer
         public void Interrupt()
         {
             CurrentInterval.Interrupt();
+            _timeMaster.Stop();
 
             if (IntervalInterrupted != null)
             {
