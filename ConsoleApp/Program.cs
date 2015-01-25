@@ -42,6 +42,7 @@
             var trayNotification = new TrayBubble();
             timer.IntervalFinished += trayNotification.IntervalFinished;
             timer.Tick += trayNotification.OnTick;
+            timer.IntervalInterrupted += trayNotification.IntervalInterrupted;
         }
     }
 }
