@@ -7,7 +7,6 @@
 
     internal class Ui : Subscriber
     {
-        public const string StartCommand = "start";
         public const string NextCommand = "next";
         public const string InterruptCommand = "stahp";
         public const string RestartCommand = "restart";
@@ -83,9 +82,6 @@
                 ClearTheLineCommandIsOn();
                 switch (userCommand.Name)
                 {
-                    case StartCommand:
-                        StartNext();
-                        break;
                     case NextCommand:
                         StartNext();
                         break;

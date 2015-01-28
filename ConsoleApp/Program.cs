@@ -24,7 +24,6 @@
             var consoleUi = new ConsoleUi(new CleverFactory());
 
             var ui = new Ui(timer, config);
-            consoleUi.Subscribe(ui, Ui.StartCommand);
             consoleUi.Subscribe(ui, Ui.NextCommand);
             consoleUi.Subscribe(ui, Ui.InterruptCommand);
             consoleUi.Subscribe(ui, Ui.RestartCommand);
