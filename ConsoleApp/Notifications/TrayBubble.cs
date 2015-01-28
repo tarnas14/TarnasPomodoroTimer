@@ -6,7 +6,7 @@
     using Pomodoro;
     using Pomodoro.Timer;
 
-    class TrayBubble : IDisposable
+    internal class TrayBubble : IDisposable
     {
         private readonly NotifyIcon _notifyIcon;
 

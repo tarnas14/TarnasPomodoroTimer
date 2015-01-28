@@ -102,8 +102,7 @@
             catch (PomodoroException exception)
             {
                 SaveCursorAndRewindConsoleTo(_infoRowIndex);
-                Console.WriteLine("ERROR:");
-                Console.WriteLine(exception.Message);
+                Console.WriteLine("\nERROR: " + exception.Message);
             }
         }
 
