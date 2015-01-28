@@ -22,9 +22,15 @@
             _timer = timer;
             _config = config;
             timer.IntervalFinished += IntervalFinished;
+            timer.IntervalInterrupted += IntervalInterrupted;
             timer.Tick += OnTick;
 
             Introduction();
+        }
+
+        private void IntervalInterrupted(object sender, IntervalInterruptedEventArgs e)
+        {
+            Announce(string.Format("{0} has been interrupted!", e.Type));
         }
 
         private void Introduction()
@@ -42,7 +48,7 @@
 
         public void IntervalFinished(object sender, IntervalFinishedEventArgs e)
         {
-            Announce(string.Format("{0} has ended!", e.Type));
+            Announce(string.Format("{0} has ended!\n", e.Type));
         }
 
         public void OnTick(object sender, TimeRemainingEventArgs e)
