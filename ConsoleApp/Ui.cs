@@ -16,6 +16,7 @@
         private int _infoRowIndex;
         private int _savedRow;
         private int _savedColumn;
+        private int _remainingErrorTicks = -1;
 
         public Ui(PomodoroTimer timer, PomodoroConfig config)
         {
@@ -54,6 +55,23 @@
         public void OnTick(object sender, TimeRemainingEventArgs e)
         {
             Announce(string.Format("{0} remaining: {1}", _timer.CurrentInterval.Type, e.TimeRemaining));
+
+            if (_remainingErrorTicks == 0)
+            {
+                ClearError();
+                _remainingErrorTicks = -1;
+            }
+            else if (_remainingErrorTicks > 0)
+            {
+                _remainingErrorTicks--;
+            }
+        }
+
+        private void ClearError()
+        {
+            SaveCursorAndRewindConsoleTo(_infoRowIndex + 1);
+            ClearCurrentLine();
+            RevertCursor();
         }
 
         private void Announce(string announcement)
@@ -101,9 +119,17 @@
             }
             catch (PomodoroException exception)
             {
-                SaveCursorAndRewindConsoleTo(_infoRowIndex);
-                Console.WriteLine("\nERROR: " + exception.Message);
+                DisplayErrorForXTicks("ERROR: " + exception.Message, 3);
             }
+        }
+
+        private void DisplayErrorForXTicks(string errorMessage, int tickCount)
+        {
+            SaveCursorAndRewindConsoleTo(_infoRowIndex);
+            Console.WriteLine("\n" + errorMessage);
+            RevertCursor();
+
+            _remainingErrorTicks = tickCount;
         }
 
         private void ClearTheLineCommandIsOn()
