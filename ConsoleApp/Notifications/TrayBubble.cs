@@ -17,7 +17,7 @@
 
         private void SetupNotificationIcon()
         {
-            _notifyIcon.Icon = new Icon(SystemIcons.Application, 40, 40);
+            _notifyIcon.Icon = Icon.FromHandle(AppResources.tomatoIcon.GetHicon());
             _notifyIcon.Text = "Tarnas pomodoro timer";
             _notifyIcon.Visible = true;
         }

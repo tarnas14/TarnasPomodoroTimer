@@ -30,14 +30,12 @@
 
         private void Introduction()
         {
-            Console.WriteLine("starting pomodoro timer configuration:");
             Console.WriteLine("Productivity - {0}", _config.Productivity);
             Console.WriteLine("ShortBreak - {0}", _config.ShortBreak);
             Console.WriteLine("LongBreak - {0}", _config.LongBreak);
             Console.WriteLine("Long break after {0} productive intervals", _config.LongBreakAfter);
-            Console.WriteLine("Type 'quit' to... lol... quit");
-            _infoRowIndex = Console.CursorTop;
             Console.WriteLine("");
+            _infoRowIndex = Console.CursorTop;
             Console.WriteLine("");
             Console.WriteLine("");
         }
