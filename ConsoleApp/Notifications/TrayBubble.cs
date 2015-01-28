@@ -1,11 +1,12 @@
 ﻿namespace ConsoleApp.Notifications
 {
+    using System;
     using System.Drawing;
     using System.Windows.Forms;
     using Pomodoro;
     using Pomodoro.Timer;
 
-    class TrayBubble
+    class TrayBubble : IDisposable
     {
         private readonly NotifyIcon _notifyIcon;
 
@@ -51,6 +52,11 @@
             const string bubbleText = "retart or go to next";
             ShowPopup(bubbleTitle, bubbleText);
             SetIconText(bubbleTitle + " " + bubbleText);
+        }
+
+        public void Dispose()
+        {
+            _notifyIcon.Dispose();
         }
     }
 }

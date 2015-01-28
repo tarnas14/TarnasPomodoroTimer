@@ -7,6 +7,8 @@
 
     class Program
     {
+        private static TrayBubble _trayNotification;
+
         static void Main(string[] args)
         {
             var configFactory = new ConfigFactory();
@@ -34,14 +36,21 @@
                 input = System.Console.ReadLine();
                 consoleUi.UserInput(input);
             }
+
+            Cleanup();
+        }
+
+        private static void Cleanup()
+        {
+            _trayNotification.Dispose();
         }
 
         private static void AddNotifications(PomodoroTimer timer)
         {
-            var trayNotification = new TrayBubble();
-            timer.IntervalFinished += trayNotification.IntervalFinished;
-            timer.Tick += trayNotification.OnTick;
-            timer.IntervalInterrupted += trayNotification.IntervalInterrupted;
+            _trayNotification = new TrayBubble();
+            timer.IntervalFinished += _trayNotification.IntervalFinished;
+            timer.Tick += _trayNotification.OnTick;
+            timer.IntervalInterrupted += _trayNotification.IntervalInterrupted;
         }
     }
 }
