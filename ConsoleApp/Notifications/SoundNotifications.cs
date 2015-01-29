@@ -1,4 +1,4 @@
-﻿namespace ConsoleApp
+﻿namespace ConsoleApp.Notifications
 {
     using System.Media;
     using Pomodoro;
@@ -7,7 +7,20 @@
     {
         public void IntervalFinished(object sender, IntervalFinishedEventArgs e)
         {
-            SystemSounds.Exclamation.Play();
+            PlayNotification(e.Type);
+        }
+
+        private void PlayNotification(IntervalType intervalType)
+        {
+            var soundStream = AppResources.BreakFinishedSound;
+
+            if (intervalType == IntervalType.Productive)
+            {
+                soundStream = AppResources.ProductiveFinishedSound;
+            }
+
+            var soundPlayer = new SoundPlayer(soundStream);
+            soundPlayer.Play();
         }
     }
 }

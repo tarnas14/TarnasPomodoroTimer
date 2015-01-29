@@ -1,6 +1,7 @@
 ﻿namespace ConsoleApp
 {
     using System.Linq;
+    using System.Media;
     using Notifications;
     using Pomodoro.Timer;
     using Tarnas.ConsoleUi;
@@ -12,7 +13,7 @@
         static void Main(string[] args)
         {
             var configFactory = new ConfigFactory();
-            var config = configFactory.GetConfig(new []{"25", "5", "20", "4"});
+            var config = configFactory.GetConfig(new []{"1", "1", "1", "2"});
             if (args.Count() == 4)
             {
                 config = configFactory.GetConfig(args);
