@@ -133,6 +133,11 @@ namespace Pomodoro.Timer
 
         public void Interrupt()
         {
+            if (!CurrentInterval.InProgress)
+            {
+                return;
+            }
+
             CurrentInterval.Interrupt();
             _timeMaster.Stop();
 

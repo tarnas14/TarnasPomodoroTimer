@@ -313,14 +313,14 @@
         {
             //given
             _pomodoro.StartNext();
-            _pomodoro.Interrupt();
-
+            
             const IntervalType expectedType = IntervalType.Productive;
 
             //when
-            var interruptEvents = _eventHelper.InterruptedIntervals;
+            _pomodoro.Interrupt();
             
             //then
+            var interruptEvents = _eventHelper.InterruptedIntervals;
             Assert.That(interruptEvents.Count, Is.EqualTo(1));
             var firstInterruptEvent = interruptEvents.First();
             Assert.That(firstInterruptEvent.Type, Is.EqualTo(expectedType));
@@ -358,6 +358,20 @@
 
             //then
             Assert.That(_timeMaster.Ticking, Is.False);
+        }
+
+        [Test]
+        public void ShouldNotNotifyAboutInterruptionWhenIntervalIsNotInProgress()
+        {
+            //given
+            _pomodoro.StartNext();
+            _timeMaster.FinishLatestInterval();
+
+            //when
+            _pomodoro.Interrupt();
+
+            //then
+            Assert.That(_eventHelper.InterruptedIntervals.Count, Is.EqualTo(0));
         }
     }
 }
