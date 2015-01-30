@@ -24,19 +24,14 @@
 
             AddNotifications(timer);
 
-            var consoleUi = new ConsoleUi(new CleverFactory());
+            var consoleUi = new ConsoleUi();
 
             var ui = new Ui(timer, config);
             consoleUi.Subscribe(ui, Ui.NextCommand);
             consoleUi.Subscribe(ui, Ui.InterruptCommand);
             consoleUi.Subscribe(ui, Ui.RestartCommand);
 
-            string input = string.Empty;
-            while (input != "/quit")
-            {
-                input = System.Console.ReadLine();
-                consoleUi.UserInput(input);
-            }
+            new InputLoop(consoleUi).Loop();
 
             Cleanup();
         }
