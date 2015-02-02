@@ -2,6 +2,7 @@ namespace Pomodoro.Timer
 {
     using System;
     using System.Collections.Generic;
+    using Wamp.Server;
 
     public class PomodoroTimer
     {
@@ -41,7 +42,8 @@ namespace Pomodoro.Timer
                 IntervalStarted(this, new IntervalStartedEventArgs
                 {
                     Type = CurrentInterval.Type,
-                    Duration = CurrentInterval.TimeSpan
+                    Duration = CurrentInterval.TimeSpan,
+                    Id = Id
                 });
             }
         }
@@ -73,7 +75,8 @@ namespace Pomodoro.Timer
                 IntervalFinished(this, new IntervalFinishedEventArgs
                 {
                     Type = CurrentInterval.Type,
-                    NextIntervalType = NextQueuedInterval
+                    NextIntervalType = NextQueuedInterval,
+                    Id = Id
                 });
             }
         }
@@ -130,6 +133,8 @@ namespace Pomodoro.Timer
             }
         }
 
+        public PomodoroIdentifier Id { get; set; }
+
         public void Interrupt()
         {
             if (!CurrentInterval.InProgress)
@@ -144,7 +149,8 @@ namespace Pomodoro.Timer
             {
                 IntervalInterrupted(this, new IntervalInterruptedEventArgs
                 {
-                    Type = CurrentInterval.Type
+                    Type = CurrentInterval.Type,
+                    Id = Id
                 });
             }
         }

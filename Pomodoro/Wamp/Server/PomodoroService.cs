@@ -1,5 +1,8 @@
 namespace Pomodoro.Wamp.Server
 {
+    using System;
+    using Timer;
+
     public class PomodoroService
     {
         private readonly PomodoroStore _pomodoroStore;
@@ -9,9 +12,27 @@ namespace Pomodoro.Wamp.Server
             _pomodoroStore = pomodoroStore;
         }
 
+        public event EventHandler<IntervalStartedEventArgs> IntervalStarted;
+
         public PomodoroIdentifier SetupNewPomodoro(PomodoroConfig config)
         {
-            return _pomodoroStore.SetupNewPomodoro(config);
+            var newPomodoroId = _pomodoroStore.SetupNewPomodoro(config);
+
+            Subscribe(newPomodoroId);
+
+            return newPomodoroId;
+        }
+
+        private void Subscribe(PomodoroIdentifier newPomodoroId)
+        {
+            var pomodoro = _pomodoroStore[newPomodoroId];
+
+            pomodoro.IntervalStarted += OnIntervalStarted;
+        }
+
+        private void OnIntervalStarted(object sender, IntervalStartedEventArgs e)
+        {
+            var pomodoro = sender as PomodoroTimer;
         }
 
         public void StartNext(PomodoroIdentifier identifier)

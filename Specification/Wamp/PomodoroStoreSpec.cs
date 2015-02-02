@@ -31,5 +31,20 @@
             Assert.That(pomodoroId, Is.Not.EqualTo(anotherPomodoroId));
             Assert.That(pomodoro, Is.Not.EqualTo(anotherPomodoro));
         }
+
+        [Test]
+        public void ShouldAssignIdsToPomodoros()
+        {
+            //given
+            var config = new PomodoroConfig();
+            var pomodoroId = _pomodoroStore.SetupNewPomodoro(config);
+
+            //when
+            var pomodoro = _pomodoroStore[pomodoroId];
+
+            //then
+            Assert.That(pomodoro.Id, Is.EqualTo(pomodoroId));
+        }
+        
     }
 }

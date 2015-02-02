@@ -19,7 +19,9 @@
             var newTimer = new PomodoroTimer(_timeMaster, config);
             _pomodoros.Add(newTimer);
 
-            return new PomodoroIdentifier(_pomodoros.Count);
+            newTimer.Id = new PomodoroIdentifier(_pomodoros.Count);
+
+            return newTimer.Id;
         }
 
         public PomodoroTimer this[PomodoroIdentifier pomodoroId]
