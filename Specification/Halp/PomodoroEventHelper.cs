@@ -19,6 +19,14 @@
             InterruptedIntervals = new List<IntervalInterruptedEventArgs>();
         }
 
+        public void SubscribeToPomodoro(PomodoroTimer pomodoro)
+        {
+            pomodoro.IntervalStarted += StartOfInterval;
+            pomodoro.IntervalInterrupted += IntervalInterrupted;
+            pomodoro.IntervalFinished += EndOfInterval;
+            pomodoro.Tick += OnTick;
+        }
+
         public void EndOfInterval(object sender, IntervalFinishedEventArgs e)
         {
             FinishedIntervals.Add(e);

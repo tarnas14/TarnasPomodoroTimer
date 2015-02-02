@@ -18,5 +18,15 @@ namespace Pomodoro.Wamp.Server
         {
             _pomodoroStore[identifier].StartNext();
         }
+
+        public void Interrupt(PomodoroIdentifier identifier)
+        {
+            _pomodoroStore[identifier].Interrupt();
+        }
+
+        public void Restart(PomodoroIdentifier identifier)
+        {
+            _pomodoroStore[identifier].Restart();
+        }
     }
 }

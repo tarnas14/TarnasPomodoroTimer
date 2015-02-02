@@ -18,7 +18,7 @@
         {
             _pomodoroEventHelper = new PomodoroEventHelper();
             var pomodoro = new PomodoroTimer(Mock.Of<TimeMaster>(), new PomodoroConfig());
-            pomodoro.IntervalStarted += _pomodoroEventHelper.StartOfInterval;
+            _pomodoroEventHelper.SubscribeToPomodoro(pomodoro);
             _pomodoroStoreMock = new Mock<PomodoroStore>();
             _pomodoroStoreMock.Setup(mock => mock[It.IsAny<PomodoroIdentifier>()]).Returns(pomodoro);
             _pomodoroService = new PomodoroService(_pomodoroStoreMock.Object);
@@ -49,6 +49,36 @@
 
             //then
             Assert.That(_pomodoroEventHelper.StartedIntervals.Count, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void ShouldStopPomodoroWithGivenId()
+        {
+            //given
+            var identifier = new PomodoroIdentifier(2);
+            _pomodoroService.StartNext(identifier);
+
+            //when
+            _pomodoroService.Interrupt(identifier);
+
+            //then
+            Assert.That(_pomodoroEventHelper.InterruptedIntervals.Count, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void ShouldRestartPomodoroWithGivenId()
+        {
+            //given
+            var identifier = new PomodoroIdentifier(2);
+            _pomodoroService.StartNext(identifier);
+            _pomodoroService.Interrupt(identifier);
+
+            //when
+            _pomodoroService.Restart(identifier);
+
+            //then
+            Assert.That(_pomodoroEventHelper.InterruptedIntervals.Count, Is.EqualTo(1));
+            Assert.That(_pomodoroEventHelper.StartedIntervals.Count, Is.EqualTo(2));
         }
     }
 }
