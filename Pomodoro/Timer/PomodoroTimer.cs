@@ -5,7 +5,6 @@ namespace Pomodoro.Timer
 
     public class PomodoroTimer
     {
-
         private readonly TimeMaster _timeMaster;
         private int _currentInterval;
         private IList<Interval> _pomodoros;

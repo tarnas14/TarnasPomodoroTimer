@@ -1,10 +1,10 @@
 ﻿namespace Pomodoro.Wamp.Server
 {
-    internal class PomodoroIdentificator
+    public class PomodoroIdentifier
     {
         public int Id { get; private set; }
 
-        public PomodoroIdentificator(int id)
+        public PomodoroIdentifier(int id)
         {
             Id = id;
         }

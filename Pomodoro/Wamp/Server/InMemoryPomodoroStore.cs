@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using Timer;
 
-    public class InMemoryPomodoroStore
+    public class InMemoryPomodoroStore : PomodoroStore
     {
         private readonly IList<PomodoroTimer> _pomodoros;
         private readonly TimeMaster _timeMaster;
@@ -14,15 +14,15 @@
             _pomodoros = new List<PomodoroTimer>();
         }
 
-        public PomodoroIdentificator SetupNewPomodoro(PomodoroConfig config)
+        public PomodoroIdentifier SetupNewPomodoro(PomodoroConfig config)
         {
             var newTimer = new PomodoroTimer(_timeMaster, config);
             _pomodoros.Add(newTimer);
 
-            return new PomodoroIdentificator(_pomodoros.Count);
+            return new PomodoroIdentifier(_pomodoros.Count);
         }
 
-        public PomodoroTimer this[PomodoroIdentificator pomodoroId]
+        public PomodoroTimer this[PomodoroIdentifier pomodoroId]
         {
             get { return _pomodoros[pomodoroId.Id - 1]; }
         }
