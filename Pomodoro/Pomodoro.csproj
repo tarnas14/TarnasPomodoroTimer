@@ -51,8 +51,12 @@
     <Compile Include="Timer\PomodoroTimer.cs" />
     <Compile Include="Timer\PreviousIntervalHasNotFinishedException.cs" />
     <Compile Include="Timer\TimeRemainingEventArgs.cs" />
+    <Compile Include="Wamp\Server\InMemoryPomodoroStore.cs" />
+    <Compile Include="Wamp\Server\PomodoroIdentificator.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Wamp\Client\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
