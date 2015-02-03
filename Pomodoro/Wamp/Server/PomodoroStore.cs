@@ -5,6 +5,9 @@
     public interface PomodoroStore
     {
         PomodoroIdentifier SetupNewPomodoro(PomodoroConfig config);
-        PomodoroTimer this[PomodoroIdentifier pomodoroId] { get; }
+        void SubscribeToPomodoro(PomodoroIdentifier pomodoroId, PomodoroSubscriber pomodroSubscriber);
+        void StartNext(PomodoroIdentifier identifier);
+        void Interrupt(PomodoroIdentifier identifier);
+        void Restart(PomodoroIdentifier identifier);
     }
 }

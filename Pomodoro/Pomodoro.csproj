@@ -48,6 +48,7 @@
     <Compile Include="Timer\Interval.cs" />
     <Compile Include="Timer\IntervalInterruptedEventArgs.cs" />
     <Compile Include="Timer\IntervalStartedEventArgs.cs" />
+    <Compile Include="Timer\PomodoroSubscriber.cs" />
     <Compile Include="Timer\PomodoroTimer.cs" />
     <Compile Include="Timer\PreviousIntervalHasNotFinishedException.cs" />
     <Compile Include="Timer\TimeRemainingEventArgs.cs" />

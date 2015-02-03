@@ -18,36 +18,22 @@ namespace Pomodoro.Wamp.Server
         {
             var newPomodoroId = _pomodoroStore.SetupNewPomodoro(config);
 
-            Subscribe(newPomodoroId);
-
             return newPomodoroId;
-        }
-
-        private void Subscribe(PomodoroIdentifier newPomodoroId)
-        {
-            var pomodoro = _pomodoroStore[newPomodoroId];
-
-            pomodoro.IntervalStarted += OnIntervalStarted;
-        }
-
-        private void OnIntervalStarted(object sender, IntervalStartedEventArgs e)
-        {
-            var pomodoro = sender as PomodoroTimer;
         }
 
         public void StartNext(PomodoroIdentifier identifier)
         {
-            _pomodoroStore[identifier].StartNext();
+            _pomodoroStore.StartNext(identifier);
         }
 
         public void Interrupt(PomodoroIdentifier identifier)
         {
-            _pomodoroStore[identifier].Interrupt();
+            _pomodoroStore.Interrupt(identifier);
         }
 
         public void Restart(PomodoroIdentifier identifier)
         {
-            _pomodoroStore[identifier].Restart();
+            _pomodoroStore.Restart(identifier);
         }
     }
 }

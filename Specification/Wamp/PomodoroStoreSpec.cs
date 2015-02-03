@@ -1,5 +1,7 @@
 ﻿namespace Specification.Wamp
 {
+    using System.Linq;
+    using Halp;
     using Moq;
     using NUnit.Framework;
     using Pomodoro;
@@ -7,44 +9,64 @@
 
     class PomodoroStoreSpec
     {
-        private InMemoryPomodoroStore _pomodoroStore;
+        private PomodoroStore _pomodoroStore;
+        private PomodoroEventHelper _pomodoroEventHelper;
+        private PomodoroIdentifier _identifier;
 
         [SetUp]
         public void Setup()
         {
+            _pomodoroEventHelper = new PomodoroEventHelper();
             _pomodoroStore = new InMemoryPomodoroStore(Mock.Of<TimeMaster>());
+            _identifier = _pomodoroStore.SetupNewPomodoro(new PomodoroConfig());
+            _pomodoroStore.SubscribeToPomodoro(_identifier, _pomodoroEventHelper);
         }
 
         [Test]
-        public void ShouldStoreMultiplePomodoroTimers()
+        public void ShouldStartPomodoroWithGivenId()
         {
             //given
-            var config = new PomodoroConfig();
-            var pomodoroId = _pomodoroStore.SetupNewPomodoro(config);
-            var anotherPomodoroId = _pomodoroStore.SetupNewPomodoro(config);
-
+            
             //when
-            var pomodoro = _pomodoroStore[pomodoroId];
-            var anotherPomodoro = _pomodoroStore[anotherPomodoroId];
+            _pomodoroStore.StartNext(_identifier);
 
             //then
-            Assert.That(pomodoroId, Is.Not.EqualTo(anotherPomodoroId));
-            Assert.That(pomodoro, Is.Not.EqualTo(anotherPomodoro));
+            Assert.That(_pomodoroEventHelper.StartedIntervals.Count, Is.EqualTo(1));
+
+            Assert.That(_pomodoroEventHelper.StartedIntervals.All(interval => interval.Id == _identifier));
         }
 
         [Test]
-        public void ShouldAssignIdsToPomodoros()
+        public void ShouldStopPomodoroWithGivenId()
         {
             //given
-            var config = new PomodoroConfig();
-            var pomodoroId = _pomodoroStore.SetupNewPomodoro(config);
+            _pomodoroStore.StartNext(_identifier);
 
             //when
-            var pomodoro = _pomodoroStore[pomodoroId];
+            _pomodoroStore.Interrupt(_identifier);
 
             //then
-            Assert.That(pomodoro.Id, Is.EqualTo(pomodoroId));
+            Assert.That(_pomodoroEventHelper.InterruptedIntervals.Count, Is.EqualTo(1));
+
+            Assert.That(_pomodoroEventHelper.InterruptedIntervals.All(interval => interval.Id == _identifier));
         }
-        
+
+        [Test]
+        public void ShouldRestartPomodoroWithGivenId()
+        {
+            //given
+            _pomodoroStore.StartNext(_identifier);
+            _pomodoroStore.Interrupt(_identifier);
+
+            //when
+            _pomodoroStore.Restart(_identifier);
+
+            //then
+            Assert.That(_pomodoroEventHelper.InterruptedIntervals.Count, Is.EqualTo(1));
+            Assert.That(_pomodoroEventHelper.StartedIntervals.Count, Is.EqualTo(2));
+
+            Assert.That(_pomodoroEventHelper.StartedIntervals.All(interval => interval.Id == _identifier));
+            Assert.That(_pomodoroEventHelper.InterruptedIntervals.All(interval => interval.Id == _identifier));
+        }
     }
 }

@@ -24,9 +24,32 @@
             return newTimer.Id;
         }
 
-        public PomodoroTimer this[PomodoroIdentifier pomodoroId]
+        private PomodoroTimer this[PomodoroIdentifier pomodoroId]
         {
             get { return _pomodoros[pomodoroId.Id - 1]; }
+        }
+
+        public void SubscribeToPomodoro(PomodoroIdentifier pomodoroId, PomodoroSubscriber subscriber)
+        {
+            this[pomodoroId].IntervalFinished += subscriber.EndOfInterval;
+            this[pomodoroId].IntervalStarted += subscriber.StartOfInterval;
+            this[pomodoroId].IntervalInterrupted += subscriber.IntervalInterrupted;
+            this[pomodoroId].Tick+= subscriber.OnTick;
+        }
+
+        public void StartNext(PomodoroIdentifier identifier)
+        {
+            this[identifier].StartNext();
+        }
+
+        public void Interrupt(PomodoroIdentifier identifier)
+        {
+            this[identifier].Interrupt();
+        }
+
+        public void Restart(PomodoroIdentifier identifier)
+        {
+            this[identifier].Restart();
         }
     }
 }

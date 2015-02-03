@@ -4,7 +4,7 @@
     using Pomodoro;
     using Pomodoro.Timer;
 
-    internal class PomodoroEventHelper
+    internal class PomodoroEventHelper : PomodoroSubscriber
     {
         public IList<TimeRemainingEventArgs> Ticks { get; private set; }
         public IList<IntervalFinishedEventArgs> FinishedIntervals { get; private set; }
