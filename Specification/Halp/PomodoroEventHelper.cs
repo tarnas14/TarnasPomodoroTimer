@@ -22,7 +22,7 @@
         public void SubscribeToPomodoro(PomodoroTimer pomodoro)
         {
             pomodoro.IntervalStarted += StartOfInterval;
-            pomodoro.IntervalInterrupted += IntervalInterrupted;
+            pomodoro.IntervalInterrupted += OnInterruptedInterval;
             pomodoro.IntervalFinished += EndOfInterval;
             pomodoro.Tick += OnTick;
         }
@@ -37,7 +37,7 @@
             StartedIntervals.Add(e);
         }
 
-        public void IntervalInterrupted(object sender, IntervalInterruptedEventArgs e)
+        public void OnInterruptedInterval(object sender, IntervalInterruptedEventArgs e)
         {
             InterruptedIntervals.Add(e);
         }

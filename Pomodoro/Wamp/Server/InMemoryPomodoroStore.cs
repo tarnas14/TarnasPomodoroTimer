@@ -33,7 +33,7 @@
         {
             this[pomodoroId].IntervalFinished += subscriber.EndOfInterval;
             this[pomodoroId].IntervalStarted += subscriber.StartOfInterval;
-            this[pomodoroId].IntervalInterrupted += subscriber.IntervalInterrupted;
+            this[pomodoroId].IntervalInterrupted += subscriber.OnInterruptedInterval;
             this[pomodoroId].Tick+= subscriber.OnTick;
         }
 
