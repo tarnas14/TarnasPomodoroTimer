@@ -6,17 +6,22 @@
     public class InMemoryPomodoroStore : PomodoroStore
     {
         private readonly IList<PomodoroTimer> _pomodoros;
-        private readonly TimeMaster _timeMaster;
+        private readonly TimeMasterFactory _timeMasterFactory;
 
-        public InMemoryPomodoroStore(TimeMaster timeMaster)
+        public InMemoryPomodoroStore() : this(new SystemTimeMasterFactory())
         {
-            _timeMaster = timeMaster;
+            
+        }
+
+        public InMemoryPomodoroStore(TimeMasterFactory timeMasterFactory)
+        {
+            _timeMasterFactory = timeMasterFactory;
             _pomodoros = new List<PomodoroTimer>();
         }
 
         public PomodoroIdentifier SetupNewPomodoro(PomodoroConfig config)
         {
-            var newTimer = new PomodoroTimer(_timeMaster, config);
+            var newTimer = new PomodoroTimer(_timeMasterFactory.GetTimeMaster(), config);
             _pomodoros.Add(newTimer);
 
             newTimer.Id = new PomodoroIdentifier(_pomodoros.Count);
@@ -31,10 +36,7 @@
 
         public void SubscribeToPomodoro(PomodoroIdentifier pomodoroId, PomodoroSubscriber subscriber)
         {
-            this[pomodoroId].IntervalFinished += subscriber.EndOfInterval;
-            this[pomodoroId].IntervalStarted += subscriber.StartOfInterval;
-            this[pomodoroId].IntervalInterrupted += subscriber.OnInterruptedInterval;
-            this[pomodoroId].Tick+= subscriber.OnTick;
+            subscriber.Subscribe(this[pomodoroId]);
         }
 
         public void StartNext(PomodoroIdentifier identifier)

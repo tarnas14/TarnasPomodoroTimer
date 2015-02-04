@@ -56,7 +56,6 @@
       <DependentUpon>AppResources.resx</DependentUpon>
     </Compile>
     <Compile Include="Notifications\SoundNotifications.cs" />
-    <Compile Include="SystemTimeMaster.cs" />
     <Compile Include="Ui.cs" />
   </ItemGroup>
   <ItemGroup>

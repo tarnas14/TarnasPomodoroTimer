@@ -4,7 +4,7 @@ namespace Pomodoro.Timer
     using System.Collections.Generic;
     using Wamp.Server;
 
-    public class PomodoroTimer
+    public class PomodoroTimer : PomodoroNotifier
     {
         private readonly TimeMaster _timeMaster;
         private int _currentInterval;

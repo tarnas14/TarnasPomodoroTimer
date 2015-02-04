@@ -9,16 +9,18 @@
 
     class PomodoroServiceSpec
     {
-        private PomodoroService _pomodoroService;
+        private DefaultPomodoroService _pomodoroService;
         private PomodoroEventHelper _eventHelper;
+        private Mock<TimeMasterFactory> _timeMasterFactoryMock;
 
         [SetUp]
         public void Setup()
         {
-            _pomodoroService = new PomodoroService(new InMemoryPomodoroStore(Mock.Of<TimeMaster>()));
+            _timeMasterFactoryMock = new Mock<TimeMasterFactory>();
+            _timeMasterFactoryMock.Setup(mockFactory => mockFactory.GetTimeMaster()).Returns(Mock.Of<TimeMaster>);
+            _pomodoroService = new DefaultPomodoroService(new InMemoryPomodoroStore(_timeMasterFactoryMock.Object));
             _eventHelper = new PomodoroEventHelper();
-            _pomodoroService.IntervalStarted += _eventHelper.StartOfInterval;
-            _pomodoroService.IntervalInterrupted += _eventHelper.OnInterruptedInterval;
+            _eventHelper.Subscribe(_pomodoroService);
         }
 
         [Test]

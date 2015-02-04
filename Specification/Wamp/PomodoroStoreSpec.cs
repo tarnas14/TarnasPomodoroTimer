@@ -12,12 +12,15 @@
         private PomodoroStore _pomodoroStore;
         private PomodoroEventHelper _pomodoroEventHelper;
         private PomodoroIdentifier _identifier;
+        private Mock<TimeMasterFactory> _timeMasterFactoryMock;
 
         [SetUp]
         public void Setup()
         {
+            _timeMasterFactoryMock = new Mock<TimeMasterFactory>();
+            _timeMasterFactoryMock.Setup(mockFactory => mockFactory.GetTimeMaster()).Returns(Mock.Of<TimeMaster>);
             _pomodoroEventHelper = new PomodoroEventHelper();
-            _pomodoroStore = new InMemoryPomodoroStore(Mock.Of<TimeMaster>());
+            _pomodoroStore = new InMemoryPomodoroStore(_timeMasterFactoryMock.Object);
             _identifier = _pomodoroStore.SetupNewPomodoro(new PomodoroConfig());
             _pomodoroStore.SubscribeToPomodoro(_identifier, _pomodoroEventHelper);
         }

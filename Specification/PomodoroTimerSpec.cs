@@ -38,7 +38,7 @@
         private void SetupPomodoro()
         {
             _pomodoro = new PomodoroTimer(_timeMaster, _config);
-            _eventHelper.SubscribeToPomodoro(_pomodoro);
+            _eventHelper.Subscribe(_pomodoro);
         }
 
         private IList<IntervalType> TypesOfFinishedIntervals

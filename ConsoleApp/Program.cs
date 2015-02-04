@@ -1,8 +1,8 @@
 ﻿namespace ConsoleApp
 {
     using System.Linq;
-    using System.Media;
     using Notifications;
+    using Pomodoro;
     using Pomodoro.Timer;
     using Tarnas.ConsoleUi;
 

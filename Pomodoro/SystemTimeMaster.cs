@@ -1,20 +1,19 @@
-﻿namespace ConsoleApp
+﻿namespace Pomodoro
 {
     using System;
     using System.Timers;
-    using Pomodoro;
-    using Pomodoro.Timer;
+    using Timer;
 
-    internal class SystemTimeMaster : TimeMaster
+    public class SystemTimeMaster : TimeMaster
     {
-        private readonly Timer _secondTimer;
+        private readonly System.Timers.Timer _secondTimer;
         private TimeSpan _timeLeft;
-        private Timer _currentTimer;
+        private System.Timers.Timer _currentTimer;
         private Action _callback;
 
         public SystemTimeMaster()
         {
-            _secondTimer = new Timer(1000) {AutoReset = true};
+            _secondTimer = new System.Timers.Timer(1000) {AutoReset = true};
             _secondTimer.Elapsed += OnSecondElapsed;
         }
 
@@ -39,7 +38,7 @@
         public void Pass(TimeSpan timeInterval, Action callback)
         {
             _timeLeft = timeInterval;
-            _currentTimer = new Timer(timeInterval.TotalMilliseconds)
+            _currentTimer = new System.Timers.Timer(timeInterval.TotalMilliseconds)
             {
                 AutoReset = false
             };

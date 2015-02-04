@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using Pomodoro;
     using Pomodoro.Timer;
+    using Pomodoro.Wamp.Server;
 
     internal class PomodoroEventHelper : PomodoroSubscriber
     {
@@ -19,32 +20,32 @@
             InterruptedIntervals = new List<IntervalInterruptedEventArgs>();
         }
 
-        public void SubscribeToPomodoro(PomodoroTimer pomodoro)
-        {
-            pomodoro.IntervalStarted += StartOfInterval;
-            pomodoro.IntervalInterrupted += OnInterruptedInterval;
-            pomodoro.IntervalFinished += EndOfInterval;
-            pomodoro.Tick += OnTick;
-        }
-
-        public void EndOfInterval(object sender, IntervalFinishedEventArgs e)
+        private void EndOfInterval(object sender, IntervalFinishedEventArgs e)
         {
             FinishedIntervals.Add(e);
         }
 
-        public void StartOfInterval(object sender, IntervalStartedEventArgs e)
+        private void StartOfInterval(object sender, IntervalStartedEventArgs e)
         {
             StartedIntervals.Add(e);
         }
 
-        public void OnInterruptedInterval(object sender, IntervalInterruptedEventArgs e)
+        private void OnInterruptedInterval(object sender, IntervalInterruptedEventArgs e)
         {
             InterruptedIntervals.Add(e);
         }
 
-        public void OnTick(object sender, TimeRemainingEventArgs e)
+        private void OnTick(object sender, TimeRemainingEventArgs e)
         {
             Ticks.Add(e);
+        }
+
+        public void Subscribe(PomodoroNotifier pomodoroNotifier)
+        {
+            pomodoroNotifier.IntervalFinished += EndOfInterval;
+            pomodoroNotifier.IntervalStarted += StartOfInterval;
+            pomodoroNotifier.IntervalInterrupted += OnInterruptedInterval;
+            pomodoroNotifier.Tick += OnTick;
         }
     }
 }
