@@ -7,6 +7,8 @@
     using WampSharp.V2.Client;
     using WampSharp.V2.Core.Contracts;
 
+    [TestFixture]
+    [Ignore]
     class WampTests
     {
         private const string ServerAddress = "ws://127.0.0.1:8080/ws";
@@ -46,7 +48,7 @@
         }
 
         [Test]
-        public void MultipleTypeSubjectsInTheSameTopicShouldWork()
+        public void MultipleTypeSubjectsInTheSameTopicShouldWorkWhenCallingSubjectBoundLater()
         {
             //given
             const string realmName = "asdf";
@@ -65,6 +67,36 @@
             //when
             pubStringSubject.OnNext(expected);
         }
+
+        [Test]
+        public void MultipleTypeSubjectsInTheSameTopicShouldWorkWhenCallingSubjectBoundFirst()
+        {
+            //given
+            const string realmName = "asdf";
+            const string topicText = "qwer";
+
+            var pubProxy = GetNewProxy(realmName);
+            var pubIntSubject = pubProxy.Services.GetSubject<int>(topicText);
+            var pubStringSubject = pubProxy.Services.GetSubject<string>(topicText);
+
+            const int expected = 2;
+
+            var subProxy = GetNewProxy(realmName);
+            subProxy.Services.GetSubject<int>(topicText).Subscribe(x =>
+            {
+                Assert.That(x, Is.EqualTo(expected));
+            });
+            subProxy.Services.GetSubject<string>(topicText).Subscribe(x =>
+            {
+                Assert.Fail(x.ToString());
+            });
+
+            //when
+            pubIntSubject.OnNext(expected);
+
+            Assert.Fail();
+        }
+
 
         [Test]
         [ExpectedException(typeof(WampException))]
