@@ -7,6 +7,11 @@ namespace Pomodoro.Wamp.Server
     {
         private readonly PomodoroStore _pomodoroStore;
 
+        public DefaultPomodoroService() : this(new InMemoryPomodoroStore())
+        {
+            
+        }
+
         public DefaultPomodoroService(PomodoroStore pomodoroStore)
         {
             _pomodoroStore = pomodoroStore;
