@@ -7,7 +7,7 @@
     using Pomodoro;
     using Pomodoro.Wamp.Server;
 
-    class PomodoroServiceSpec
+    class DefaultPomodoroServiceSpec
     {
         private DefaultPomodoroService _pomodoroService;
         private PomodoroEventHelper _eventHelper;

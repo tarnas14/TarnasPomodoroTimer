@@ -1,9 +1,10 @@
 ﻿namespace PomodoroClient
 {
     using Pomodoro;
+    using Pomodoro.Timer;
     using Pomodoro.Wamp.Server;
     using WampSharp.V2;
-    using WampSharp.V2.Realm;
+    using WampSharp.V2.Client;
     using System;
 
     class Program
@@ -16,7 +17,7 @@
             const string serverAddress = "ws://127.0.0.1:8080/ws";
 
             IWampChannel channel =
-                factory.CreateJsonChannel(serverAddress, "tarnasRealm");
+                factory.CreateMsgpackChannel(serverAddress, "tarnasPomodoroRealm");
 
             channel.Open().Wait(5000);
 
@@ -34,6 +35,8 @@
             });
             Console.ReadLine();
 
+            SubscribeToPomodoro(pomodoroIdentifier, channel.RealmProxy);
+
             proxy.StartNext(pomodoroIdentifier);
             Console.ReadLine();
 
@@ -48,6 +51,23 @@
 
             proxy.StartNext(pomodoroIdentifier);
             Console.ReadLine();
+        }
+
+        private static void SubscribeToPomodoro(PomodoroIdentifier pomodoroIdentifier, IWampRealmProxy realmProxy)
+        {
+            realmProxy.Services.GetSubject<IntervalInterruptedEventArgs>(pomodoroIdentifier.GetTopic(TopicType.interrupted)).Subscribe(Interrupted);
+
+            realmProxy.Services.GetSubject<IntervalStartedEventArgs>(pomodoroIdentifier.GetTopic(TopicType.started)).Subscribe(Started);
+        }
+
+        private static void Interrupted(IntervalInterruptedEventArgs interrupted)
+        {
+            Console.WriteLine("interrupted {0}", interrupted.Id);
+        }
+
+        private static void Started(IntervalStartedEventArgs started)
+        {
+            Console.WriteLine("started {0}", started.Id);
         }
     }
 }
