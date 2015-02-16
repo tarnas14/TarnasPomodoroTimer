@@ -64,6 +64,15 @@
             pomodoroNotifier.IntervalFinished += IntervalFinished;
             pomodoroNotifier.Tick += OnTick;
             pomodoroNotifier.IntervalInterrupted += IntervalInterrupted;
+            pomodoroNotifier.IntervalStarted += IntervalStarted;
+        }
+
+        private void IntervalStarted(object sender, IntervalStartedEventArgs e)
+        {
+            string bubbleTitle = string.Format("{0} started!", e.Type);
+            string bubbleText = string.Format("duration: {0}", e.Duration);
+            ShowPopup(bubbleTitle, bubbleText);
+            SetIconText(bubbleTitle + " " + bubbleText);
         }
     }
 }
