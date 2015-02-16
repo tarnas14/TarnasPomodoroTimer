@@ -6,7 +6,7 @@
     using Pomodoro;
     using Pomodoro.Timer;
 
-    internal class TrayBubble : IDisposable
+    internal class TrayBubble : IDisposable, PomodoroSubscriber
     {
         private readonly NotifyIcon _notifyIcon;
 
@@ -23,7 +23,7 @@
             _notifyIcon.Visible = true;
         }
 
-        public void IntervalFinished(object sender, IntervalFinishedEventArgs e)
+        private void IntervalFinished(object sender, IntervalFinishedEventArgs e)
         {
             string bubbleTitle = string.Format("{0} finished!", e.Type);
             string bubbleText = string.Format("next up: {0}", e.NextIntervalType);
@@ -41,12 +41,12 @@
             _notifyIcon.Text = text;
         }
 
-        public void OnTick(object sender, TimeRemainingEventArgs e)
+        private void OnTick(object sender, TimeRemainingEventArgs e)
         {
             SetIconText(string.Format("{0}; left: {1}", e.IntervalType, e.TimeRemaining));
         }
 
-        public void IntervalInterrupted(object sender, IntervalInterruptedEventArgs e)
+        private void IntervalInterrupted(object sender, IntervalInterruptedEventArgs e)
         {
             string bubbleTitle = string.Format("{0} interrupted!", e.Type);
             const string bubbleText = "retart or go to next";
@@ -57,6 +57,13 @@
         public void Dispose()
         {
             _notifyIcon.Dispose();
+        }
+
+        public void Subscribe(PomodoroNotifier pomodoroNotifier)
+        {
+            pomodoroNotifier.IntervalFinished += IntervalFinished;
+            pomodoroNotifier.Tick += OnTick;
+            pomodoroNotifier.IntervalInterrupted += IntervalInterrupted;
         }
     }
 }

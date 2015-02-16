@@ -2,25 +2,26 @@
 {
     using System.Media;
     using Pomodoro;
+    using Pomodoro.Timer;
 
-    internal class SoundNotifications
+    internal class SoundNotifications : PomodoroSubscriber
     {
-        public void IntervalFinished(object sender, IntervalFinishedEventArgs e)
-        {
-            PlayNotification(e.Type);
-        }
-
-        private void PlayNotification(IntervalType intervalType)
+        private void IntervalFinished(object sender, IntervalFinishedEventArgs e)
         {
             var soundStream = AppResources.BreakFinishedSound;
 
-            if (intervalType == IntervalType.Productive)
+            if (e.Type == IntervalType.Productive)
             {
                 soundStream = AppResources.ProductiveFinishedSound;
             }
 
             var soundPlayer = new SoundPlayer(soundStream);
             soundPlayer.Play();
+        }
+
+        public void Subscribe(PomodoroNotifier pomodoroNotifier)
+        {
+            pomodoroNotifier.IntervalFinished += IntervalFinished;
         }
     }
 }

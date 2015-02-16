@@ -22,7 +22,10 @@
             var timeMaster = new SystemTimeMaster();
             var timer = new PomodoroTimer(timeMaster, config);
 
-            AddNotifications(timer);
+            _trayNotification = new TrayBubble();
+            _trayNotification.Subscribe(timer);
+
+            new SoundNotifications().Subscribe(timer);
 
             var consoleUi = new ConsoleUi();
 
@@ -39,17 +42,6 @@
         private static void Cleanup()
         {
             _trayNotification.Dispose();
-        }
-
-        private static void AddNotifications(PomodoroTimer timer)
-        {
-            _trayNotification = new TrayBubble();
-            timer.IntervalFinished += _trayNotification.IntervalFinished;
-            timer.Tick += _trayNotification.OnTick;
-            timer.IntervalInterrupted += _trayNotification.IntervalInterrupted;
-
-            var soundNotification = new SoundNotifications();
-            timer.IntervalFinished += soundNotification.IntervalFinished;
         }
     }
 }
