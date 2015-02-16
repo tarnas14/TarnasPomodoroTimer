@@ -8,7 +8,6 @@
     using WampSharp.V2.Core.Contracts;
 
     [TestFixture]
-    [Ignore]
     class WampTests
     {
         private const string ServerAddress = "ws://127.0.0.1:8080/ws";
@@ -41,31 +40,59 @@
             const int expected = 2;
 
             var subProxy = GetNewProxy(realmName);
-            subProxy.Services.GetSubject<int>(topicText).Subscribe(x => Assert.That(x, Is.EqualTo(expected)));
+            int actual = -1;
+            subProxy.Services.GetSubject<int>(topicText).Subscribe(x => actual = x);
 
             //when
             pubSubject.OnNext(expected);
+
+            //then
+            WaitForExpected(ref actual, expected);
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        private void WaitForExpected<T>(ref T actual, T expected)
+        {
+            var start = DateTime.Now;
+            while (!actual.Equals(expected))
+            {
+                if (DateTime.Now - start > TimeSpan.FromSeconds(2))
+                {
+                    return;
+                }
+            }
         }
 
         [Test]
-        public void MultipleTypeSubjectsInTheSameTopicShouldWorkWhenCallingSubjectBoundLater()
+        public void SubjectSubscriptionsAreOverwritten()
         {
             //given
             const string realmName = "asdf";
             const string topicText = "qwer";
 
             var pubProxy = GetNewProxy(realmName);
-            var pubIntSubject = pubProxy.Services.GetSubject<int>(topicText);
             var pubStringSubject = pubProxy.Services.GetSubject<string>(topicText);
+            var pubIntSubject = pubProxy.Services.GetSubject<int>(topicText);
 
             const string expected = "testtest";
+            const int expectedInt = 123;
 
             var subProxy = GetNewProxy(realmName);
-            subProxy.Services.GetSubject<int>(topicText).Subscribe(x => Assert.Fail(x.ToString()));
-            subProxy.Services.GetSubject<string>(topicText).Subscribe(x => Assert.That(x, Is.EqualTo(expected)));
+            int actualInt = -1;
+            string actual = string.Empty;
+
+            subProxy.Services.GetSubject<string>(topicText).Subscribe(x => actual = x);
+            subProxy.Services.GetSubject<int>(topicText).Subscribe(x => actualInt = x);
 
             //when
+            pubIntSubject.OnNext(expectedInt);
             pubStringSubject.OnNext(expected);
+
+            //then
+            WaitForExpected(ref actual, expected);
+            WaitForExpected(ref actualInt, expectedInt);
+            Assert.That(actualInt, Is.EqualTo(expectedInt));
+            Assert.That(string.IsNullOrEmpty(actual));
         }
 
         [Test]
@@ -76,46 +103,24 @@
             const string topicText = "qwer";
 
             var pubProxy = GetNewProxy(realmName);
-            var pubIntSubject = pubProxy.Services.GetSubject<int>(topicText);
             var pubStringSubject = pubProxy.Services.GetSubject<string>(topicText);
+            var pubIntSubject = pubProxy.Services.GetSubject<int>(topicText);
 
             const int expected = 2;
 
             var subProxy = GetNewProxy(realmName);
-            subProxy.Services.GetSubject<int>(topicText).Subscribe(x =>
-            {
-                Assert.That(x, Is.EqualTo(expected));
-            });
-            subProxy.Services.GetSubject<string>(topicText).Subscribe(x =>
-            {
-                Assert.Fail(x.ToString());
-            });
+            int actual = -1;
+            bool stringSubjectCalled = false;
+            subProxy.Services.GetSubject<string>(topicText).Subscribe(x => stringSubjectCalled = true);
+            subProxy.Services.GetSubject<int>(topicText).Subscribe(x => actual = x);
 
             //when
             pubIntSubject.OnNext(expected);
 
-            Assert.Fail();
-        }
-
-
-        [Test]
-        [ExpectedException(typeof(WampException))]
-        public void AddingSubjectsAfterHostIsOpenIsNotPossible()
-        {
-            //given
-            const string realmName = "asdf'";
-            const string topicText = "qawer";
-            const int expected = 2;
-
-            var hostRealm = _host.RealmContainer.GetRealmByName(realmName);
-            var clientProxy = GetNewProxy(realmName);
-
-            clientProxy.Services.GetSubject<int>(topicText).Subscribe(x => Assert.That(x, Is.EqualTo(expected)));
-
-            var hostSubject = hostRealm.Services.GetSubject<int>(topicText);
-
-            //when
-            hostSubject.OnNext(expected);
+            //then
+            WaitForExpected(ref actual, expected);
+            Assert.That(actual, Is.EqualTo(expected));
+            Assert.False(stringSubjectCalled);
         }
 
         [Test]
@@ -129,11 +134,15 @@
             var pubProxy = GetNewProxy(realmName);
             var subProxy = GetNewProxy(realmName);
 
-            subProxy.Services.GetSubject<int>(topicText).Subscribe(x => Assert.That(x, Is.EqualTo(expected)));
+            int actual = -1;
+            subProxy.Services.GetSubject<int>(topicText).Subscribe(x => actual = x);
             var pubSubject = pubProxy.Services.GetSubject<int>(topicText);
 
             //when
             pubSubject.OnNext(expected);
+
+            //then
+            WaitForExpected(ref actual, expected);
         }
 
         private static IWampRealmProxy GetNewProxy(string realmName)

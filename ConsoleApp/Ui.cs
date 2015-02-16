@@ -46,7 +46,6 @@
             Console.WriteLine("");
         }
 
-
         public void IntervalFinished(object sender, IntervalFinishedEventArgs e)
         {
             Announce(string.Format("{0} has ended!\n", e.Type));
