@@ -18,17 +18,23 @@
 
         private void SetupNotificationIcon()
         {
-            _notifyIcon.Icon = Icon.FromHandle(AppResources.tomatoIcon.GetHicon());
+            SetVoidIcon();
             _notifyIcon.Text = "Tarnas pomodoro timer";
             _notifyIcon.Visible = true;
         }
 
         private void IntervalFinished(object sender, IntervalFinishedEventArgs e)
         {
+            SetVoidIcon();
             string bubbleTitle = string.Format("{0} finished!", e.Type);
             string bubbleText = string.Format("next up: {0}", e.NextIntervalType);
             ShowPopup(bubbleTitle, bubbleText);
             SetIconText(bubbleTitle);
+        }
+
+        private void SetVoidIcon()
+        {
+            _notifyIcon.Icon = Icon.FromHandle(AppResources.tomatoIcon.GetHicon());
         }
 
         private void ShowPopup(string bubbleTitle, string bubbleText)
@@ -48,6 +54,7 @@
 
         private void IntervalInterrupted(object sender, IntervalInterruptedEventArgs e)
         {
+            SetVoidIcon();
             string bubbleTitle = string.Format("{0} interrupted!", e.Type);
             const string bubbleText = "retart or go to next";
             ShowPopup(bubbleTitle, bubbleText);
@@ -69,10 +76,22 @@
 
         private void IntervalStarted(object sender, IntervalStartedEventArgs e)
         {
+            SetStateIcon(e.Type);
             string bubbleTitle = string.Format("{0} started!", e.Type);
             string bubbleText = string.Format("duration: {0}", e.Duration);
             ShowPopup(bubbleTitle, bubbleText);
             SetIconText(bubbleTitle + " " + bubbleText);
+        }
+
+        private void SetStateIcon(IntervalType type)
+        {
+            if (type == IntervalType.Productive)
+            {
+                _notifyIcon.Icon = Icon.FromHandle(AppResources.pomodoroProductive.GetHicon());
+                return;
+            }
+            
+            _notifyIcon.Icon = Icon.FromHandle(AppResources.pomodoroBreak.GetHicon());
         }
     }
 }
