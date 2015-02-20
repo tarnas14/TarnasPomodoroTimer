@@ -53,7 +53,7 @@
 
         public void OnTick(object sender, TimeRemainingEventArgs e)
         {
-            Announce(string.Format("{0} remaining: {1}", _timer.CurrentInterval.Type, e.TimeRemaining));
+            Announce(string.Format("{0} remaining: {1}", e.IntervalType, e.TimeRemaining));
 
             if (_remainingErrorTicks == 0)
             {

@@ -125,7 +125,7 @@ namespace Pomodoro.Timer
             }
         }
 
-        public Interval CurrentInterval
+        private Interval CurrentInterval
         {
             get
             {

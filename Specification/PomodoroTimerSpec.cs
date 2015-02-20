@@ -249,23 +249,6 @@
         }
 
         [Test]
-        public void ShouldIndicateCurrentIntervalRightFromTheStart()
-        {
-            //given
-            var expected = new {
-                IntervalType = IntervalType.Productive,
-                Length = _config.Productivity
-            };
-
-            //when
-            var actual = _pomodoro.CurrentInterval;
-
-            //then
-            Assert.That(actual.Type, Is.EqualTo(expected.IntervalType));
-            Assert.That(actual.TimeSpan, Is.EqualTo(expected.Length));
-        }
-
-        [Test]
         public void ShouldHoldInformationAboutNextIntervalInIntervalFinishedNotification()
         {
             //given
