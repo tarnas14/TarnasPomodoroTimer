@@ -29,10 +29,12 @@
 
             var consoleUi = new ConsoleUi();
 
-            var ui = new Ui(timer, config);
-            consoleUi.Subscribe(ui, Ui.NextCommand);
-            consoleUi.Subscribe(ui, Ui.InterruptCommand);
-            consoleUi.Subscribe(ui, Ui.RestartCommand);
+            var ui = new Ui(config);
+            ui.Subscribe(timer);
+            var controller = new PomodoroController(timer, ui);
+            consoleUi.Subscribe(controller, PomodoroController.NextCommand);
+            consoleUi.Subscribe(controller, PomodoroController.InterruptCommand);
+            consoleUi.Subscribe(controller, PomodoroController.RestartCommand);
 
             new InputLoop(consoleUi).Loop();
 

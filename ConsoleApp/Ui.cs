@@ -5,26 +5,17 @@
     using Tarnas.ConsoleUi;
     using Console = System.Console;
 
-    internal class Ui : Subscriber
+    internal class Ui : PomodoroSubscriber
     {
-        public const string NextCommand = "next";
-        public const string InterruptCommand = "stahp";
-        public const string RestartCommand = "restart";
-
-        private readonly PomodoroTimer _timer;
         private readonly PomodoroConfig _config;
         private int _infoRowIndex;
         private int _savedRow;
         private int _savedColumn;
         private int _remainingErrorTicks = -1;
 
-        public Ui(PomodoroTimer timer, PomodoroConfig config)
+        public Ui(PomodoroConfig config)
         {
-            _timer = timer;
             _config = config;
-            timer.IntervalFinished += IntervalFinished;
-            timer.IntervalInterrupted += IntervalInterrupted;
-            timer.Tick += OnTick;
 
             Introduction();
         }
@@ -98,31 +89,7 @@
             Console.SetCursorPosition(_savedColumn, _savedRow);
         }
 
-        public void Execute(UserCommand userCommand)
-        {
-            try
-            {
-                ClearTheLineCommandIsOn();
-                switch (userCommand.Name)
-                {
-                    case NextCommand:
-                        StartNext();
-                        break;
-                    case InterruptCommand:
-                        Interrupt();
-                        break;
-                    case RestartCommand:
-                        Restart();
-                        break;
-                }
-            }
-            catch (PomodoroException exception)
-            {
-                DisplayErrorForXTicks("ERROR: " + exception.Message, 3);
-            }
-        }
-
-        private void DisplayErrorForXTicks(string errorMessage, int tickCount)
+        public void DisplayErrorForXTicks(string errorMessage, int tickCount)
         {
             SaveCursorAndRewindConsoleTo(_infoRowIndex);
             Console.WriteLine("\n" + errorMessage);
@@ -131,25 +98,17 @@
             _remainingErrorTicks = tickCount;
         }
 
-        private void ClearTheLineCommandIsOn()
+        public void ClearTheLineCommandIsOn()
         {
             Console.SetCursorPosition(0, Console.CursorTop-1);
             ClearCurrentLine();
         }
 
-        private void Restart()
+        public void Subscribe(PomodoroNotifier pomodoroNotifier)
         {
-            _timer.Restart();
-        }
-
-        private void Interrupt()
-        {
-            _timer.Interrupt();
-        }
-
-        private void StartNext()
-        {
-            _timer.StartNext();
+            pomodoroNotifier.IntervalFinished += IntervalFinished;
+            pomodoroNotifier.IntervalInterrupted += IntervalInterrupted;
+            pomodoroNotifier.Tick += OnTick;
         }
     }
 }
