@@ -89,6 +89,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Wamp\PomodoroStoreSpec.cs" />
     <Compile Include="Wamp\DefaultPomodoroServiceSpec.cs" />
+    <Compile Include="Halp\WampBaseTestFixture.cs" />
+    <Compile Include="Halp\WampHostHelper.cs" />
     <Compile Include="Wamp\WampTests.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -2,31 +2,15 @@
 {
     using System;
     using System.Threading.Tasks;
+    using Halp;
     using NUnit.Framework;
     using WampSharp.V2;
     using WampSharp.V2.Client;
     using WampSharp.V2.Core.Contracts;
 
     [TestFixture]
-    class WampTests
+    class WampTests : WampBaseTestFixture
     {
-        private const string ServerAddress = "ws://127.0.0.1:8080/ws";
-        private DefaultWampHost _host;
-
-        [SetUp]
-        public void Setup()
-        {
-            _host = new DefaultWampHost(ServerAddress);
-
-            _host.Open();
-        }
-
-        [TearDown]
-        public void Teardown()
-        {
-            _host.Dispose();
-        }
-
         [Test]
         public void ClientShouldGetPublishedEvent()
         {
@@ -34,12 +18,12 @@
             const string realmName = "asdf";
             const string topicText = "qwer";
 
-            var pubProxy = GetNewProxy(realmName);
+            var pubProxy = WampHostHelper.GetNewProxy(ServerAddress, realmName);
             var pubSubject = pubProxy.Services.GetSubject<int>(topicText);
 
             const int expected = 2;
 
-            var subProxy = GetNewProxy(realmName);
+            var subProxy = WampHostHelper.GetNewProxy(ServerAddress, realmName);
             int actual = -1;
             subProxy.Services.GetSubject<int>(topicText).Subscribe(x => actual = x);
 
@@ -51,18 +35,6 @@
             Assert.That(actual, Is.EqualTo(expected));
         }
 
-        private void WaitForExpected<T>(ref T actual, T expected)
-        {
-            var start = DateTime.Now;
-            while (!actual.Equals(expected))
-            {
-                if (DateTime.Now - start > TimeSpan.FromSeconds(2))
-                {
-                    return;
-                }
-            }
-        }
-
         [Test]
         public void SubjectSubscriptionsAreOverwritten()
         {
@@ -70,14 +42,14 @@
             const string realmName = "asdf";
             const string topicText = "qwer";
 
-            var pubProxy = GetNewProxy(realmName);
+            var pubProxy = WampHostHelper.GetNewProxy(ServerAddress, realmName);
             var pubStringSubject = pubProxy.Services.GetSubject<string>(topicText);
             var pubIntSubject = pubProxy.Services.GetSubject<int>(topicText);
 
             const string expected = "testtest";
             const int expectedInt = 123;
 
-            var subProxy = GetNewProxy(realmName);
+            var subProxy = WampHostHelper.GetNewProxy(ServerAddress, realmName);
             int actualInt = -1;
             string actual = string.Empty;
 
@@ -102,13 +74,13 @@
             const string realmName = "asdf";
             const string topicText = "qwer";
 
-            var pubProxy = GetNewProxy(realmName);
+            var pubProxy = WampHostHelper.GetNewProxy(ServerAddress, realmName);
             var pubStringSubject = pubProxy.Services.GetSubject<string>(topicText);
             var pubIntSubject = pubProxy.Services.GetSubject<int>(topicText);
 
             const int expected = 2;
 
-            var subProxy = GetNewProxy(realmName);
+            var subProxy = WampHostHelper.GetNewProxy(ServerAddress, realmName);
             int actual = -1;
             bool stringSubjectCalled = false;
             subProxy.Services.GetSubject<string>(topicText).Subscribe(x => stringSubjectCalled = true);
@@ -131,8 +103,8 @@
             const string topicText = "qawer";
             const int expected = 2;
 
-            var pubProxy = GetNewProxy(realmName);
-            var subProxy = GetNewProxy(realmName);
+            var pubProxy = WampHostHelper.GetNewProxy(ServerAddress, realmName);
+            var subProxy = WampHostHelper.GetNewProxy(ServerAddress, realmName);
 
             int actual = -1;
             subProxy.Services.GetSubject<int>(topicText).Subscribe(x => actual = x);
@@ -143,15 +115,6 @@
 
             //then
             WaitForExpected(ref actual, expected);
-        }
-
-        private static IWampRealmProxy GetNewProxy(string realmName)
-        {
-            DefaultWampChannelFactory channelFactory = new DefaultWampChannelFactory();
-            IWampChannel channel = channelFactory.CreateJsonChannel(ServerAddress, realmName);
-            Task openTask = channel.Open();
-            openTask.Wait(5000);
-            return channel.RealmProxy;
         }
     }
 }

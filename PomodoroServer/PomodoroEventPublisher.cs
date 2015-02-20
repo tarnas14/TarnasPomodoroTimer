@@ -4,7 +4,6 @@
     using Pomodoro.Wamp.Server;
     using WampSharp.V2.Client;
 
-
     class PomodoroEventPublisher : PomodoroSubscriber
     {
         private readonly IWampRealmProxy _proxyRealm;

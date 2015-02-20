@@ -77,6 +77,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="RemotePomodoroNotifier.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -85,6 +86,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ConsoleApp\ConsoleApp.csproj">
+      <Project>{F4D3EB35-AD95-4A91-8300-663A6A4255BB}</Project>
+      <Name>ConsoleApp</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Pomodoro\Pomodoro.csproj">
       <Project>{D9D3C0CD-2FEA-4B94-9BCA-756BF3D2F712}</Project>
       <Name>Pomodoro</Name>

@@ -2,10 +2,9 @@
 {
     using Pomodoro;
     using Pomodoro.Timer;
-    using Tarnas.ConsoleUi;
     using Console = System.Console;
 
-    internal class Ui : PomodoroSubscriber
+    public class Ui : PomodoroSubscriber
     {
         private readonly PomodoroConfig _config;
         private int _infoRowIndex;
