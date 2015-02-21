@@ -6,7 +6,7 @@ namespace PomodoroClient
     using Pomodoro.Wamp.Server;
     using WampSharp.V2.Client;
 
-    internal class RemotePomodoroNotifier : PomodoroNotifier
+    public class RemotePomodoroNotifier : PomodoroNotifier
     {
         public RemotePomodoroNotifier(PomodoroIdentifier pomodoroIdentifier, IWampRealmProxy realmProxy)
         {

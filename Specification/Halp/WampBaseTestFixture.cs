@@ -2,7 +2,6 @@
 {
     using System;
     using NUnit.Framework;
-    using Wamp;
     using WampSharp.V2;
 
     [TestFixture]
