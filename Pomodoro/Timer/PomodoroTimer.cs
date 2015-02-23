@@ -85,7 +85,7 @@ namespace Pomodoro.Timer
         {
             if (CurrentInterval.InProgress)
             {
-                throw new PreviousIntervalHasNotFinishedException();
+                StopCurrentInterval();
             }
 
             if (_started)
@@ -142,8 +142,7 @@ namespace Pomodoro.Timer
                 return;
             }
 
-            CurrentInterval.Interrupt();
-            _timeMaster.Stop();
+            StopCurrentInterval();
 
             if (IntervalInterrupted != null)
             {
@@ -153,6 +152,12 @@ namespace Pomodoro.Timer
                     Id = Id
                 });
             }
+        }
+
+        private void StopCurrentInterval()
+        {
+            CurrentInterval.Interrupt();
+            _timeMaster.Stop();
         }
 
         public void Restart()

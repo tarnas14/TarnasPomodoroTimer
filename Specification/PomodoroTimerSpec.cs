@@ -124,27 +124,22 @@
         }
 
         [Test]
-        [ExpectedException(typeof(PreviousIntervalHasNotFinishedException))]
-        public void ShouldNotStartNextIfFirstIntervalHasNotFinished()
+        public void ShouldStartNextIntervalEvenIfCurrentOneIsNotFinished()
         {
             //given
             _pomodoro.StartNext();
+            _pomodoro.StartNext();
+
+            var expectedIntervals = new List<IntervalType>
+            {
+                IntervalType.ShortBreak
+            };
 
             //when
-            _pomodoro.StartNext();
-        }
-
-        [Test]
-        [ExpectedException(typeof(PreviousIntervalHasNotFinishedException))]
-        public void ShouldNotStartNextIfCurrentIntervalHasNotFinished()
-        {
-            //given
-            _pomodoro.StartNext();
             _timeMaster.FinishLatestInterval();
-            _pomodoro.StartNext();
 
-            //when
-            _pomodoro.StartNext();
+            //then
+            Assert.That(TypesOfFinishedIntervals, Is.EquivalentTo(expectedIntervals));
         }
 
         [Test]
