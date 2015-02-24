@@ -8,8 +8,12 @@ namespace PomodoroClient
 
     public class RemotePomodoroNotifier : PomodoroNotifier
     {
-        public RemotePomodoroNotifier(PomodoroIdentifier pomodoroIdentifier, IWampRealmProxy realmProxy)
+        private readonly TimeMaster _timeMaster;
+        private Interval _currentIterval;
+
+        public RemotePomodoroNotifier(PomodoroIdentifier pomodoroIdentifier, IWampRealmProxy realmProxy, TimeMaster timeMaster)
         {
+            _timeMaster = timeMaster;
             SubscribeToTopics(pomodoroIdentifier, realmProxy);
         }
 
@@ -30,9 +34,23 @@ namespace PomodoroClient
 
         private void Started(IntervalStartedEventArgs started)
         {
+            _currentIterval = new Interval(started.Type, started.Duration);
+            _timeMaster.Pass(_currentIterval.TimeSpan, OnIntervalEnd);
+
             if (IntervalStarted != null)
             {
                 IntervalStarted(this, started);
+            }
+        }
+
+        private void OnIntervalEnd()
+        {
+            if (IntervalFinished != null)
+            {
+                IntervalFinished(this, new IntervalFinishedEventArgs
+                {
+                    Type = _currentIterval.Type
+                });
             }
         }
 

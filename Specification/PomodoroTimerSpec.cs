@@ -41,11 +41,6 @@
             _eventHelper.Subscribe(_pomodoro);
         }
 
-        private IList<IntervalType> TypesOfFinishedIntervals
-        {
-            get { return _eventHelper.FinishedIntervals.Select(interval => interval.Type).ToList(); }
-        }
-
         [Test]
         public void ShouldStartWithProductivityInterval()
         {
@@ -57,7 +52,7 @@
             _timeMaster.FinishLatestInterval();
 
             //then
-            Assert.That(TypesOfFinishedIntervals, Is.EquivalentTo(expectedIntervals));
+            Assert.That(_eventHelper.TypesOfFinishedIntervals, Is.EquivalentTo(expectedIntervals));
         }
 
         [Test]
@@ -74,7 +69,7 @@
             _timeMaster.FinishLatestInterval();
 
             //then
-            Assert.That(TypesOfFinishedIntervals, Is.EquivalentTo(expectedIntervals));
+            Assert.That(_eventHelper.TypesOfFinishedIntervals, Is.EquivalentTo(expectedIntervals));
         }
 
         [Test]
@@ -94,7 +89,7 @@
             _timeMaster.FinishLatestInterval();
 
             //then
-            Assert.That(TypesOfFinishedIntervals, Is.EquivalentTo(expectedIntervals));
+            Assert.That(_eventHelper.TypesOfFinishedIntervals, Is.EquivalentTo(expectedIntervals));
         }
 
         [Test]
@@ -120,7 +115,7 @@
             _timeMaster.FinishLatestInterval(); //stop productive again
 
             //then
-            Assert.That(TypesOfFinishedIntervals, Is.EquivalentTo(expectedIntervals));
+            Assert.That(_eventHelper.TypesOfFinishedIntervals, Is.EquivalentTo(expectedIntervals));
         }
 
         [Test]
@@ -139,7 +134,7 @@
             _timeMaster.FinishLatestInterval();
 
             //then
-            Assert.That(TypesOfFinishedIntervals, Is.EquivalentTo(expectedIntervals));
+            Assert.That(_eventHelper.TypesOfFinishedIntervals, Is.EquivalentTo(expectedIntervals));
         }
 
         [Test]
@@ -171,7 +166,7 @@
             _timeMaster.FinishLatestInterval();
 
             //then
-            Assert.That(TypesOfFinishedIntervals, Is.EquivalentTo(expectedIntervals));
+            Assert.That(_eventHelper.TypesOfFinishedIntervals, Is.EquivalentTo(expectedIntervals));
         }
 
         [Test]
@@ -188,7 +183,7 @@
             _timeMaster.FinishLatestInterval();
 
             //then
-            Assert.That(TypesOfFinishedIntervals, Is.EquivalentTo(expectedIntervals));
+            Assert.That(_eventHelper.TypesOfFinishedIntervals, Is.EquivalentTo(expectedIntervals));
         }
 
         [Test]
@@ -207,7 +202,7 @@
             _timeMaster.FinishLatestInterval();
 
             //then
-            Assert.That(TypesOfFinishedIntervals, Is.EquivalentTo(expectedIntervals));
+            Assert.That(_eventHelper.TypesOfFinishedIntervals, Is.EquivalentTo(expectedIntervals));
         }
 
         [Test]

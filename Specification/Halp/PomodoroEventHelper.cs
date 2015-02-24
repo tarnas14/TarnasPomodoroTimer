@@ -1,9 +1,9 @@
 ﻿namespace Specification.Halp
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Pomodoro;
     using Pomodoro.Timer;
-    using Pomodoro.Wamp.Server;
 
     internal class PomodoroEventHelper : PomodoroSubscriber
     {
@@ -46,6 +46,11 @@
             pomodoroNotifier.IntervalStarted += StartOfInterval;
             pomodoroNotifier.IntervalInterrupted += OnInterruptedInterval;
             pomodoroNotifier.Tick += OnTick;
+        }
+
+        public IList<IntervalType> TypesOfFinishedIntervals
+        {
+            get { return FinishedIntervals.Select(interval => interval.Type).ToList(); }
         }
     }
 }

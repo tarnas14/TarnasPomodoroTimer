@@ -37,7 +37,7 @@
 
             var pomodoroIdentifier = proxy.SetupNewPomodoro(pomodoroConfig);
 
-            var pomodoroProxy = new RemotePomodoroNotifier(pomodoroIdentifier, channel.RealmProxy);
+            var pomodoroProxy = new RemotePomodoroNotifier(pomodoroIdentifier, channel.RealmProxy, new SystemTimeMaster());
 
             var ui = new Ui(pomodoroConfig);
             ui.Subscribe(pomodoroProxy);

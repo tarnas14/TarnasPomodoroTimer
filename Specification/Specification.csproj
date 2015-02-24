@@ -91,7 +91,7 @@
     <Compile Include="Wamp\DefaultPomodoroServiceSpec.cs" />
     <Compile Include="Halp\WampBaseTestFixture.cs" />
     <Compile Include="Halp\WampHostHelper.cs" />
-    <Compile Include="Wamp\RemoteNotifierIntegrationSpec.cs" />
+    <Compile Include="Wamp\RemoteNotifierSpec.cs" />
     <Compile Include="Wamp\WampTests.cs" />
   </ItemGroup>
   <ItemGroup>
