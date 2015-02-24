@@ -1,7 +1,6 @@
 ﻿namespace Specification.Wamp
 {
     using System;
-    using System.Collections;
     using Halp;
     using Moq;
     using NUnit.Framework;
@@ -38,29 +37,30 @@
         public void ShouldNotifyAboutRemoteStartedEvent()
         {
             //given
-            bool started = false;
-            _clientNotifier.IntervalStarted += (sender, intervalStartedArgs) => started = true;
+            PomodoroIdentifier actualIdentifier = null;
+            _clientNotifier.IntervalStarted += (sender, args) =>
+            {
+                actualIdentifier = args.Id;
+            };
 
             //when
-            _serverNotifier.Raise(notifier => notifier.IntervalStarted += null, new IntervalStartedEventArgs{Id = _identifier});
+            RaisePomodoroStartedEventOnRemoteServerNotifier(new IntervalStartedEventArgs { Id = _identifier });
 
             //then
-            WaitForExpected(ref started, true);
-            Assert.True(started);
+            Assert.That(actualIdentifier.Id, Is.EqualTo(_identifier.Id));
         }
 
         [Test]
         public void ShouldCountTimeAfterReceivingStartSignal()
         {
             //given
-            bool started = false;
-            _clientNotifier.IntervalStarted += (sender, intervalStartedArgs) => started = true;
-            _serverNotifier.Raise(notifier => notifier.IntervalStarted += null, new IntervalStartedEventArgs
+            var intervalStartedEventArgs = new IntervalStartedEventArgs
             {
-                Id = _identifier, 
-                Duration = TimeSpan.FromMinutes(25), 
+                Id = _identifier,
+                Duration = TimeSpan.FromMinutes(25),
                 Type = IntervalType.Productive
-            });
+            };
+            RaisePomodoroStartedEventOnRemoteServerNotifier(intervalStartedEventArgs);
 
             var expectedFinishedIntervals = new[]
             {
@@ -68,11 +68,37 @@
             };
 
             //when
-            WaitForExpected(ref started, true);
             _timeMaster.FinishLatestInterval();
 
             //then
             Assert.That(_eventHelper.TypesOfFinishedIntervals, Is.EquivalentTo(expectedFinishedIntervals));
+        }
+
+        private void RaisePomodoroStartedEventOnRemoteServerNotifier(IntervalStartedEventArgs intervalStartedEventArgs)
+        {
+            bool started = false;
+            _clientNotifier.IntervalStarted += (sender, intervalStartedArgs) => started = true;
+            _serverNotifier.Raise(notifier => notifier.IntervalStarted += null, intervalStartedEventArgs);
+            WaitForExpected(ref started, true);
+        }
+
+        [Test]
+        public void ShouldNotifyAboutTimerTicks()
+        {
+            //given
+            RaisePomodoroStartedEventOnRemoteServerNotifier(new IntervalStartedEventArgs
+            {
+                Id = new PomodoroIdentifier(1),
+                Type = IntervalType.Productive,
+                Duration = TimeSpan.FromMinutes(2)
+            });
+
+            //when
+            _timeMaster.DoTick();
+            _timeMaster.DoTick();
+
+            //then
+            Assert.That(_eventHelper.Ticks.Count, Is.EqualTo(2));
         }
     }
 }

@@ -14,7 +14,21 @@ namespace PomodoroClient
         public RemotePomodoroNotifier(PomodoroIdentifier pomodoroIdentifier, IWampRealmProxy realmProxy, TimeMaster timeMaster)
         {
             _timeMaster = timeMaster;
+            SubscribeToTicks();
             SubscribeToTopics(pomodoroIdentifier, realmProxy);
+        }
+
+        private void SubscribeToTicks()
+        {
+            _timeMaster.Tick += OnTick;
+        }
+
+        private void OnTick(object sender, TimeRemainingEventArgs e)
+        {
+            if (Tick != null)
+            {
+                Tick(this, e);
+            }
         }
 
         private void SubscribeToTopics(PomodoroIdentifier pomodoroIdentifier, IWampRealmProxy realmProxy)
