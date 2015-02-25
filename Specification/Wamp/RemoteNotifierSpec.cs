@@ -44,7 +44,7 @@
             };
 
             //when
-            RaisePomodoroStartedEventOnRemoteServerNotifier(new IntervalStartedEventArgs { Id = _identifier });
+            RaisePomodoroEventOnRemoteServer(new IntervalStartedEventArgs { Id = _identifier });
 
             //then
             Assert.That(actualIdentifier.Id, Is.EqualTo(_identifier.Id));
@@ -60,7 +60,7 @@
                 Duration = TimeSpan.FromMinutes(25),
                 Type = IntervalType.Productive
             };
-            RaisePomodoroStartedEventOnRemoteServerNotifier(intervalStartedEventArgs);
+            RaisePomodoroEventOnRemoteServer(intervalStartedEventArgs);
 
             var expectedFinishedIntervals = new[]
             {
@@ -74,11 +74,21 @@
             Assert.That(_eventHelper.TypesOfFinishedIntervals, Is.EquivalentTo(expectedFinishedIntervals));
         }
 
-        private void RaisePomodoroStartedEventOnRemoteServerNotifier(IntervalStartedEventArgs intervalStartedEventArgs)
+        private void RaisePomodoroEventOnRemoteServer(EventArgs eventArgs)
         {
             bool started = false;
-            _clientNotifier.IntervalStarted += (sender, intervalStartedArgs) => started = true;
-            _serverNotifier.Raise(notifier => notifier.IntervalStarted += null, intervalStartedEventArgs);
+
+            if ((eventArgs as IntervalStartedEventArgs) != null)
+            {
+                _clientNotifier.IntervalStarted += (sender, intervalStartedArgs) => started = true;
+                _serverNotifier.Raise(notifier => notifier.IntervalStarted += null, eventArgs as IntervalStartedEventArgs);
+            }
+            else if ((eventArgs as IntervalInterruptedEventArgs) != null)
+            {
+                _clientNotifier.IntervalInterrupted += (sender, args) => started = true;
+                _serverNotifier.Raise(notifier => notifier.IntervalInterrupted += null, eventArgs as IntervalInterruptedEventArgs);
+            }
+
             WaitForExpected(ref started, true);
         }
 
@@ -86,7 +96,7 @@
         public void ShouldNotifyAboutTimerTicks()
         {
             //given
-            RaisePomodoroStartedEventOnRemoteServerNotifier(new IntervalStartedEventArgs
+            RaisePomodoroEventOnRemoteServer(new IntervalStartedEventArgs
             {
                 Id = new PomodoroIdentifier(1),
                 Type = IntervalType.Productive,
@@ -99,6 +109,28 @@
 
             //then
             Assert.That(_eventHelper.Ticks.Count, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void ShouldInterruptTimerWhenRemoteInterruptedEventReceived()
+        {
+            //given
+            RaisePomodoroEventOnRemoteServer(new IntervalStartedEventArgs
+            {
+                Id = new PomodoroIdentifier(1),
+                Type = IntervalType.Productive,
+                Duration = TimeSpan.FromMinutes(2)
+            });
+
+            //when
+            RaisePomodoroEventOnRemoteServer(new IntervalInterruptedEventArgs
+            {
+                Id = new PomodoroIdentifier(1),
+                Type = IntervalType.Productive
+            });
+
+            //then
+            Assert.That(_eventHelper.InterruptedIntervals.Count, Is.EqualTo(1));
         }
     }
 }
