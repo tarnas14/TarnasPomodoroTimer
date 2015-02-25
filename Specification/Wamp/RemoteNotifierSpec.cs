@@ -1,6 +1,7 @@
 ﻿namespace Specification.Wamp
 {
     using System;
+    using System.Linq;
     using Halp;
     using Moq;
     using NUnit.Framework;
@@ -21,7 +22,7 @@
         private const string RealmName = "testRealm";
 
         [SetUp]
-        public void Setup()
+        public new void Setup()
         {
             _timeMaster = new ControlledTimeMaster();
             _identifier = new PomodoroIdentifier(1);
@@ -98,7 +99,7 @@
             //given
             RaisePomodoroEventOnRemoteServer(new IntervalStartedEventArgs
             {
-                Id = new PomodoroIdentifier(1),
+                Id = _identifier,
                 Type = IntervalType.Productive,
                 Duration = TimeSpan.FromMinutes(2)
             });
@@ -117,7 +118,7 @@
             //given
             RaisePomodoroEventOnRemoteServer(new IntervalStartedEventArgs
             {
-                Id = new PomodoroIdentifier(1),
+                Id = _identifier,
                 Type = IntervalType.Productive,
                 Duration = TimeSpan.FromMinutes(2)
             });
@@ -125,12 +126,36 @@
             //when
             RaisePomodoroEventOnRemoteServer(new IntervalInterruptedEventArgs
             {
-                Id = new PomodoroIdentifier(1),
+                Id = _identifier,
                 Type = IntervalType.Productive
             });
 
             //then
             Assert.That(_eventHelper.InterruptedIntervals.Count, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void ShouldIgnoreEventsFromPomodorosWithDifferentIdentifierThanSpecified()
+        {
+            //given
+            var notSubscribedIdentifier = new PomodoroIdentifier(666);
+            RaisePomodoroEventOnRemoteServer(new IntervalStartedEventArgs
+            {
+                Id = notSubscribedIdentifier,
+                Type = IntervalType.Productive,
+                Duration = TimeSpan.FromMinutes(2)
+            });
+
+            //when
+            RaisePomodoroEventOnRemoteServer(new IntervalInterruptedEventArgs
+            {
+                Id = notSubscribedIdentifier,
+                Type = IntervalType.Productive
+            });
+
+            //then
+            Assert.That(!_eventHelper.StartedIntervals.Any());
+            Assert.That(!_eventHelper.InterruptedIntervals.Any());
         }
     }
 }
