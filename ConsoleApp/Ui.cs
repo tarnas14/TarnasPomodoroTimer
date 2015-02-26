@@ -6,44 +6,50 @@
 
     public class Ui : PomodoroSubscriber
     {
-        private readonly PomodoroConfig _config;
-        private int _infoRowIndex;
+        private readonly int _infoRowIndex;
         private int _savedRow;
         private int _savedColumn;
         private int _remainingErrorTicks = -1;
+        private int _productiveFinishedCount;
 
-        public Ui(PomodoroConfig config)
+        public Ui()
         {
-            _config = config;
+            _productiveFinishedCount = 0;
+            _infoRowIndex = Console.CursorTop;
 
-            Introduction();
+            InitDisplayArea();
+        }
+
+        private void InitDisplayArea()
+        {
+            Console.Write("\n\n\n");
+            DisplayFinishedProductiveCount();
+        }
+
+        private void DisplayFinishedProductiveCount()
+        {
+            string productiveFinishedText = string.Format("Productive intervals finished: {0}", _productiveFinishedCount);
+            AnnounceOnLine(productiveFinishedText, 0);
         }
 
         private void IntervalInterrupted(object sender, IntervalInterruptedEventArgs e)
         {
-            Announce(string.Format("{0} has been interrupted!", e.Type));
-        }
-
-        private void Introduction()
-        {
-            Console.WriteLine("Productivity - {0}", _config.Productivity);
-            Console.WriteLine("ShortBreak - {0}", _config.ShortBreak);
-            Console.WriteLine("LongBreak - {0}", _config.LongBreak);
-            Console.WriteLine("Long break after {0} productive intervals", _config.LongBreakAfter);
-            Console.WriteLine("");
-            _infoRowIndex = Console.CursorTop;
-            Console.WriteLine("");
-            Console.WriteLine("");
+            AnnounceOnLine(string.Format("{0} has been interrupted!", e.Type), 1);
         }
 
         public void IntervalFinished(object sender, IntervalFinishedEventArgs e)
         {
-            Announce(string.Format("{0} has ended!\n", e.Type));
+            if (e.Type == IntervalType.Productive)
+            {
+                ++_productiveFinishedCount;
+                DisplayFinishedProductiveCount();
+            }
+            AnnounceOnLine(string.Format("{0} has ended!\n", e.Type), 1);
         }
 
         public void OnTick(object sender, TimeRemainingEventArgs e)
         {
-            Announce(string.Format("{0} remaining: {1}", e.IntervalType, e.TimeRemaining));
+            AnnounceOnLine(string.Format("{0} remaining: {1}", e.IntervalType, e.TimeRemaining), 1);
 
             if (_remainingErrorTicks == 0)
             {
@@ -63,9 +69,9 @@
             RevertCursor();
         }
 
-        private void Announce(string announcement)
+        private void AnnounceOnLine(string announcement, int lineIndex)
         {
-            SaveCursorAndRewindConsoleTo(_infoRowIndex);
+            SaveCursorAndRewindConsoleTo(_infoRowIndex + lineIndex);
             ClearCurrentLine();
             Console.WriteLine(announcement);
             RevertCursor();
@@ -90,9 +96,7 @@
 
         public void DisplayErrorForXTicks(string errorMessage, int tickCount)
         {
-            SaveCursorAndRewindConsoleTo(_infoRowIndex);
-            Console.WriteLine("\n" + errorMessage);
-            RevertCursor();
+            AnnounceOnLine(errorMessage, 2);
 
             _remainingErrorTicks = tickCount;
         }

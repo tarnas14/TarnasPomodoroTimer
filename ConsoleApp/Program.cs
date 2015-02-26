@@ -5,6 +5,7 @@
     using Pomodoro;
     using Pomodoro.Timer;
     using Tarnas.ConsoleUi;
+    using Console = System.Console;
 
     class Program
     {
@@ -13,7 +14,8 @@
         static void Main(string[] args)
         {
             var configFactory = new ConfigFactory();
-            var config = configFactory.GetConfig(new []{"25", "5", "20", "4"});
+            var config = configFactory.GetConfig(new[] {"1", "1", "1", "1"});
+            //var config = configFactory.GetConfig(new []{"25", "5", "20", "4"});
             if (args.Count() == 4)
             {
                 config = configFactory.GetConfig(args);
@@ -24,23 +26,34 @@
 
             SubscribeNotifications(timer);
 
-            var consoleUi = SetupUserInteraction(config, timer);
+            DisplayConfiguration(config);
+
+            var consoleUi = SetupUserInteraction(timer);
 
             new InputLoop(consoleUi).Loop();
 
             Cleanup();
         }
 
-        private static ConsoleUi SetupUserInteraction(PomodoroConfig config, PomodoroTimer timer)
+        private static void DisplayConfiguration(PomodoroConfig config)
         {
-            var ui = new Ui(config);
+            Console.WriteLine("Productivity - {0}", config.Productivity);
+            Console.WriteLine("ShortBreak - {0}", config.ShortBreak);
+            Console.WriteLine("LongBreak - {0}", config.LongBreak);
+            Console.WriteLine("Long break after {0} productive intervals", config.LongBreakAfter);
+            Console.WriteLine("");
+        }
+
+        private static ConsoleUi SetupUserInteraction(PomodoroTimer timer)
+        {
+            var ui = new Ui();
             ui.Subscribe(timer);
-            var controller = new PomodoroController(timer, ui);
+            var controller = new UserInputController(timer, ui);
 
             var consoleUi = new ConsoleUi();
-            consoleUi.Subscribe(controller, PomodoroController.NextCommand);
-            consoleUi.Subscribe(controller, PomodoroController.InterruptCommand);
-            consoleUi.Subscribe(controller, PomodoroController.RestartCommand);
+            consoleUi.Subscribe(controller, UserInputController.NextCommand);
+            consoleUi.Subscribe(controller, UserInputController.InterruptCommand);
+            consoleUi.Subscribe(controller, UserInputController.RestartCommand);
 
             return consoleUi;
         }
