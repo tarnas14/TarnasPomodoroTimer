@@ -8,13 +8,18 @@
     {
         private readonly System.Timers.Timer _secondTimer;
         private TimeSpan _timeLeft;
-        private System.Timers.Timer _currentTimer;
+        private readonly System.Timers.Timer _currentTimer;
         private Action _callback;
 
         public SystemTimeMaster()
         {
             _secondTimer = new System.Timers.Timer(1000) {AutoReset = true};
             _secondTimer.Elapsed += OnSecondElapsed;
+            _currentTimer = new System.Timers.Timer
+            {
+                AutoReset = false
+            };
+            _currentTimer.Elapsed += OnIntervalTimerElapsed;
         }
 
         private void OnSecondElapsed(object sender, ElapsedEventArgs e)
@@ -38,11 +43,8 @@
         public void Pass(TimeSpan timeInterval, Action callback)
         {
             _timeLeft = timeInterval;
-            _currentTimer = new System.Timers.Timer(timeInterval.TotalMilliseconds)
-            {
-                AutoReset = false
-            };
-            _currentTimer.Elapsed += OnIntervalTimerElapsed;
+            _currentTimer.Stop();
+            _currentTimer.Interval = timeInterval.TotalMilliseconds;
             _callback = callback;
 
             _secondTimer.Start();
