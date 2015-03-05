@@ -53,6 +53,7 @@
             consoleUi.Subscribe(controller, UserInputController.NextCommand);
             consoleUi.Subscribe(controller, UserInputController.InterruptCommand);
             consoleUi.Subscribe(controller, UserInputController.RestartCommand);
+            consoleUi.Subscribe(controller, UserInputController.RestartCounterCommand);
 
             return consoleUi;
         }
