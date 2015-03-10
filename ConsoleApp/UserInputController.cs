@@ -29,7 +29,11 @@
                         _timer.Interrupt();
                         break;
                     case RestartCommand:
-                        _timer.Restart();
+                        _timer.RestartInterval();
+                        break;
+                    case ResetCommand:
+                        _timer.Reset();
+                        _ui.ResetCounter();
                         break;
                 }
             }
@@ -42,5 +46,6 @@
         public const string NextCommand = "next";
         public const string InterruptCommand = "stahp";
         public const string RestartCommand = "restart";
+        public const string ResetCommand = "reset";
     }
 }

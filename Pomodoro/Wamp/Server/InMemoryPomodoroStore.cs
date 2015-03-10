@@ -51,7 +51,7 @@
 
         public void Restart(PomodoroIdentifier identifier)
         {
-            this[identifier].Restart();
+            this[identifier].RestartInterval();
         }
     }
 }

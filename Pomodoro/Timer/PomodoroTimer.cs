@@ -160,9 +160,18 @@ namespace Pomodoro.Timer
             _timeMaster.Stop();
         }
 
-        public void Restart()
+        public void RestartInterval()
         {
             StartCurrent();
+        }
+
+        public void Reset()
+        {
+            CurrentInterval.Interrupt();
+            _currentInterval = 0;
+            _started = false;
+
+            _timeMaster.Stop();
         }
     }
 }

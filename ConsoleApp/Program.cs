@@ -47,12 +47,14 @@
         {
             var ui = new Ui();
             ui.Subscribe(timer);
+
             var controller = new UserInputController(timer, ui);
 
             var consoleUi = new ConsoleUi();
             consoleUi.Subscribe(controller, UserInputController.NextCommand);
             consoleUi.Subscribe(controller, UserInputController.InterruptCommand);
             consoleUi.Subscribe(controller, UserInputController.RestartCommand);
+            consoleUi.Subscribe(controller, UserInputController.ResetCommand);
 
             return consoleUi;
         }

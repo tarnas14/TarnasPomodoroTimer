@@ -113,5 +113,11 @@
             pomodoroNotifier.IntervalInterrupted += IntervalInterrupted;
             pomodoroNotifier.Tick += OnTick;
         }
+
+        public void ResetCounter()
+        {
+            _productiveFinishedCount = 0;
+            DisplayFinishedProductiveCount();
+        }
     }
 }

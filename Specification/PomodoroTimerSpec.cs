@@ -179,7 +179,7 @@
             var expectedIntervals = new List<IntervalType> {IntervalType.Productive};
 
             //when
-            _pomodoro.Restart();
+            _pomodoro.RestartInterval();
             _timeMaster.FinishLatestInterval();
 
             //then
@@ -198,7 +198,7 @@
             var expectedIntervals = new List<IntervalType> { IntervalType.Productive, IntervalType.ShortBreak };
 
             //when
-            _pomodoro.Restart();
+            _pomodoro.RestartInterval();
             _timeMaster.FinishLatestInterval();
 
             //then
@@ -304,7 +304,7 @@
             //given
             _pomodoro.StartNext();
             _pomodoro.Interrupt();
-            _pomodoro.Restart();
+            _pomodoro.RestartInterval();
 
             const IntervalType expectedType = IntervalType.Productive;
             var expectedDuration = _config.Productivity;
@@ -363,6 +363,36 @@
 
             Assert.That(_eventHelper.StartedIntervals.All(interval => interval.Id == identifier));
             Assert.That(_eventHelper.InterruptedIntervals.All(interval => interval.Id == identifier));
+        }
+
+        [Test]
+        public void ShouldResetPomodoroTimer()
+        {
+            //given
+            _pomodoro.StartNext();
+            _timeMaster.FinishLatestInterval();
+
+            //when
+            _pomodoro.Reset();
+
+            //then
+            _pomodoro.StartNext();
+            _timeMaster.FinishLatestInterval();
+
+            Assert.That(_eventHelper.StartedIntervals.Last().Type, Is.EqualTo(IntervalType.Productive));
+        }
+
+        [Test]
+        public void ShouldStopCurrentIntervalOnReset()
+        {
+            //given
+            _pomodoro.StartNext();
+
+            //when
+            _pomodoro.Reset();
+
+            //then
+            Assert.That(_timeMaster.Ticking, Is.Not.True);
         }
     }
 }
