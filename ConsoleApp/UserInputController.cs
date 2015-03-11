@@ -35,6 +35,9 @@
                         _timer.Reset();
                         _ui.ResetCounter();
                         break;
+                    case RestartCounterCommand:
+                        _ui.ResetCounter();
+                        break;
                 }
             }
             catch (PomodoroException exception)
@@ -43,6 +46,7 @@
             }
         }
 
+        public const string RestartCounterCommand = "resetCounter";
         public const string NextCommand = "next";
         public const string InterruptCommand = "stahp";
         public const string RestartCommand = "restart";
