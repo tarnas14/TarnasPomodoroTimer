@@ -8,20 +8,21 @@
     class WampBaseTestFixture
     {
         protected const string ServerAddress = "ws://127.0.0.1:8080/ws";
-        private DefaultWampHost _host;
+        protected DefaultWampHost Host;
 
         [SetUp]
         public void Setup()
         {
-            _host = WampHostHelper.GetHost(ServerAddress);
+            Host = WampHostHelper.GetHost(ServerAddress);
 
-            _host.Open();
+            Host.Open();
         }
 
         [TearDown]
         public void Teardown()
         {
-            _host.Dispose();
+            Host.Dispose();
+            Host = null;
         }
 
         protected void WaitForExpected<T>(ref T actual, T expected)

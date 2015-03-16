@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using Pomodoro;
     using Pomodoro.Timer;
 
@@ -12,8 +13,11 @@
         public IList<IntervalStartedEventArgs> StartedIntervals { get; private set; }
         public IList<IntervalInterruptedEventArgs> InterruptedIntervals { get; private set; }
 
+        public int StartedIntervalsCounter;
+
         public PomodoroEventHelper()
         {
+            StartedIntervalsCounter = 0;
             FinishedIntervals = new List<IntervalFinishedEventArgs>();
             Ticks = new List<TimeRemainingEventArgs>();
             StartedIntervals = new List<IntervalStartedEventArgs>();
@@ -27,6 +31,7 @@
 
         private void StartOfInterval(object sender, IntervalStartedEventArgs e)
         {
+            StartedIntervalsCounter++;
             StartedIntervals.Add(e);
         }
 

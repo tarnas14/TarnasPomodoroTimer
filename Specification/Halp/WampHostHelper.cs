@@ -1,6 +1,5 @@
 ﻿namespace Specification.Halp
 {
-    using System.Threading.Tasks;
     using WampSharp.V2;
     using WampSharp.V2.Client;
 
@@ -15,8 +14,8 @@
         {
             var channelFactory = new DefaultWampChannelFactory();
             IWampChannel channel = channelFactory.CreateJsonChannel(serverAddress, realmName);
-            Task openTask = channel.Open();
-            openTask.Wait(5000);
+            var task = channel.Open();
+            task.Wait(5000);
             return channel.RealmProxy;
         }
     }
