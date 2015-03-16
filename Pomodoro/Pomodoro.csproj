@@ -90,16 +90,9 @@
     <Compile Include="Timer\PomodoroSubscriber.cs" />
     <Compile Include="Timer\PomodoroTimer.cs" />
     <Compile Include="Timer\TimeRemainingEventArgs.cs" />
-    <Compile Include="Wamp\Server\InMemoryPomodoroStore.cs" />
-    <Compile Include="Wamp\Server\PomodoroIdentifier.cs" />
-    <Compile Include="Wamp\Server\DefaultPomodoroService.cs" />
     <Compile Include="Timer\PomodoroNotifier.cs" />
-    <Compile Include="Wamp\Server\PomodoroService.cs" />
-    <Compile Include="Wamp\Server\PomodoroStore.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Wamp\Client\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>

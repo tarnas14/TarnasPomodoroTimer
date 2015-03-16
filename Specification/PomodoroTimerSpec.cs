@@ -2,14 +2,11 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Data.Common;
     using System.Linq;
     using Halp;
-    using Moq;
     using NUnit.Framework;
     using Pomodoro;
     using Pomodoro.Timer;
-    using Pomodoro.Wamp.Server;
 
     [TestFixture]
     class PomodoroTimerSpec
@@ -344,25 +341,6 @@
 
             //then
             Assert.That(_eventHelper.InterruptedIntervals.Count, Is.EqualTo(0));
-        }
-
-        [Test]
-        public void ShouldIncludeIdInNotifications()
-        {
-            //given
-            var identifier = new PomodoroIdentifier(2);
-            _pomodoro.Id = identifier;
-
-            //when
-            _pomodoro.StartNext();
-            _pomodoro.Interrupt();
-
-            //then
-            Assert.That(_eventHelper.StartedIntervals.Count, Is.EqualTo(1));
-            Assert.That(_eventHelper.InterruptedIntervals.Count, Is.EqualTo(1));
-
-            Assert.That(_eventHelper.StartedIntervals.All(interval => interval.Id == identifier));
-            Assert.That(_eventHelper.InterruptedIntervals.All(interval => interval.Id == identifier));
         }
 
         [Test]

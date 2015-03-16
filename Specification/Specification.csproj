@@ -87,12 +87,8 @@
     <Compile Include="Halp\PomodoroEventHelper.cs" />
     <Compile Include="PomodoroTimerSpec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Wamp\PomodoroStoreSpec.cs" />
-    <Compile Include="Wamp\DefaultPomodoroServiceSpec.cs" />
     <Compile Include="Halp\WampBaseTestFixture.cs" />
     <Compile Include="Halp\WampHostHelper.cs" />
-    <Compile Include="Wamp\RemoteNotifierSpec.cs" />
-    <Compile Include="Wamp\WampTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -101,14 +97,6 @@
     <ProjectReference Include="..\ConsoleApp\ConsoleApp.csproj">
       <Project>{F4D3EB35-AD95-4A91-8300-663A6A4255BB}</Project>
       <Name>ConsoleApp</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PomodoroClient\PomodoroClient.csproj">
-      <Project>{2941F8DE-8A92-4268-9030-631648C8E7A1}</Project>
-      <Name>PomodoroClient</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PomodoroServer\PomodoroServer.csproj">
-      <Project>{EE782DAC-EB15-42BD-A382-2341B22650C1}</Project>
-      <Name>PomodoroServer</Name>
     </ProjectReference>
     <ProjectReference Include="..\Pomodoro\Pomodoro.csproj">
       <Project>{D9D3C0CD-2FEA-4B94-9BCA-756BF3D2F712}</Project>
