@@ -340,7 +340,7 @@
             _pomodoro.Interrupt();
 
             //then
-            Assert.That(_eventHelper.InterruptedIntervals.Count, Is.EqualTo(0));
+            Assert.That(_eventHelper.InterruptedIntervals, Is.Empty);
         }
 
         [Test]

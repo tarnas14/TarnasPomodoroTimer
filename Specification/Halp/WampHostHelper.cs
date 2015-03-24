@@ -10,7 +10,7 @@
             return new DefaultWampHost(location);
         }
 
-        public static IWampRealmProxy GetNewProxy(string serverAddress, string realmName)
+        public static IWampRealmProxy GetRealmProxy(string serverAddress, string realmName)
         {
             var channelFactory = new DefaultWampChannelFactory();
             IWampChannel channel = channelFactory.CreateJsonChannel(serverAddress, realmName);

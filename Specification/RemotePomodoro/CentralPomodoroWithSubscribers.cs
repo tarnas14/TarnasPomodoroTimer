@@ -2,7 +2,6 @@
 {
     using System;
     using System.Reactive.Subjects;
-    using System.Threading;
     using Halp;
     using Moq;
     using NUnit.Framework;
@@ -15,50 +14,71 @@
     class CentralPomodoroWithSubscribers : WampBaseTestFixture
     {
         private PomodoroTimer _pomodoro;
-        private PomodoroEventHelper _eventHelper;
         private const string RealmName = "realmName";
+        private PomodoroEventHelper _eventHelper;
 
         [SetUp]
         public new void Setup()
         {
             _pomodoro = new PomodoroTimer(Mock.Of<TimeMaster>(), PomodoroConfig.Standard);
+            _eventHelper = new PomodoroEventHelper();
             var realm = Host.RealmContainer.GetRealmByName(RealmName);
             new PomodoroServer(realm, _pomodoro);
-            _eventHelper = new PomodoroEventHelper();
         }
 
         [Test]
-        public void ShouldNotifyOneSubscriberAboutPomodoroStart()
+        public void A()
         {
+            
             //given
-            _eventHelper.Subscribe(new RemotePomodoroClient(WampHostHelper.GetNewProxy(ServerAddress, RealmName)));
+            _eventHelper.Subscribe(new RemotePomodoroClient(WampHostHelper.GetRealmProxy(ServerAddress, RealmName)));
+            _eventHelper.Subscribe(new RemotePomodoroClient(WampHostHelper.GetRealmProxy(ServerAddress, RealmName)));
 
             //when
             _pomodoro.StartNext();
 
             //then
-            WaitForExpected(ref _eventHelper.StartedIntervalsCounter, 1);
+            WaitForExpected(_eventHelper.StartedIntervals.Count, 2);
+
+            Assert.That(_eventHelper.StartedIntervals.Count, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void B()
+        {
+
+            //given
+            _eventHelper.Subscribe(new RemotePomodoroClient(WampHostHelper.GetRealmProxy(ServerAddress, RealmName)));
+            _eventHelper.Subscribe(new RemotePomodoroClient(WampHostHelper.GetRealmProxy(ServerAddress, RealmName)));
+            _eventHelper.Subscribe(new RemotePomodoroClient(WampHostHelper.GetRealmProxy(ServerAddress, RealmName)));
+
+            //when
+            _pomodoro.StartNext();
+
+            //then
+            WaitForExpected(_eventHelper.StartedIntervals.Count, 3);
+
+            Assert.That(_eventHelper.StartedIntervals.Count, Is.EqualTo(3));
+        }
+
+        //when this is the last test in test fixture
+        //we get this exception:
+        /*
+         * WampSharp.V2.Core.Contracts.WampException : Exception of type 'WampSharp.V2.Core.Contracts.WampException' was thrown.
+         */
+        [Test]
+        public void C()
+        {
+            //given
+            _eventHelper.Subscribe(new RemotePomodoroClient(WampHostHelper.GetRealmProxy(ServerAddress, RealmName)));
+
+            //when
+            _pomodoro.StartNext();
+
+            //then
+            WaitForExpected(_eventHelper.StartedIntervals.Count, 1);
 
             Assert.That(_eventHelper.StartedIntervals.Count, Is.EqualTo(1));
-        }
-
-        [Test]
-        public void ShouldNotifyMultipleSubscribersAboutPomodoroStart()
-        {
-            //given
-            int counter = 0;
-            var client1 = new RemotePomodoroClient(WampHostHelper.GetNewProxy(ServerAddress, RealmName));
-            client1.IntervalStarted += (sender, args) => Interlocked.Increment(ref counter);
-            var client2 = new RemotePomodoroClient(WampHostHelper.GetNewProxy(ServerAddress, RealmName));
-            client2.IntervalStarted += (sender, args) => Interlocked.Increment(ref counter);
-
-            //when
-            _pomodoro.StartNext();
-
-            //then
-            WaitForExpected(ref counter, 2);
-
-            Assert.That(counter, Is.EqualTo(2));
         }
     }
 
