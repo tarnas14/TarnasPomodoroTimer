@@ -52,6 +52,8 @@
             consoleUi.Subscribe(controller, UserInputController.ResetCommand);
 
             consoleUi.Subscribe(_trayNotification, UserInputController.ResetCommand);
+
+            return consoleUi;
         }
 
         private static void DisplayConfiguration(PomodoroConfig config)
