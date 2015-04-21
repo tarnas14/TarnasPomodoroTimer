@@ -5,8 +5,9 @@
     using System.Windows.Forms;
     using Pomodoro;
     using Pomodoro.Timer;
+    using Tarnas.ConsoleUi;
 
-    internal class TrayBubble : IDisposable, PomodoroSubscriber
+    internal class TrayBubble : IDisposable, PomodoroSubscriber, Subscriber
     {
         private readonly NotifyIcon _notifyIcon;
 
@@ -92,6 +93,14 @@
             }
             
             _notifyIcon.Icon = Icon.FromHandle(AppResources.pomodoroBreak.GetHicon());
+        }
+
+        public void Execute(UserCommand userCommand)
+        {
+            if (userCommand.Name == UserInputController.ResetCommand)
+            {
+                SetVoidIcon();
+            }
         }
     }
 }

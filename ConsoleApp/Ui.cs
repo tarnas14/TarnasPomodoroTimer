@@ -12,6 +12,9 @@
         private int _remainingErrorTicks = -1;
         private int _productiveFinishedCount;
 
+        private const int EventsLine = 1;
+        private const int ErrorLine = 2;
+
         public Ui()
         {
             _productiveFinishedCount = 0;
@@ -34,7 +37,7 @@
 
         private void IntervalInterrupted(object sender, IntervalInterruptedEventArgs e)
         {
-            AnnounceOnLine(string.Format("{0} has been interrupted!", e.Type), 1);
+            AnnounceOnLine(string.Format("{0} has been interrupted!", e.Type), EventsLine);
         }
 
         public void IntervalFinished(object sender, IntervalFinishedEventArgs e)
@@ -44,12 +47,12 @@
                 ++_productiveFinishedCount;
                 DisplayFinishedProductiveCount();
             }
-            AnnounceOnLine(string.Format("{0} has ended!\n", e.Type), 1);
+            AnnounceOnLine(string.Format("{0} has ended!\n", e.Type), EventsLine);
         }
 
         public void OnTick(object sender, TimeRemainingEventArgs e)
         {
-            AnnounceOnLine(string.Format("{0} remaining: {1}", e.IntervalType, e.TimeRemaining), 1);
+            AnnounceOnLine(string.Format("{0} remaining: {1}", e.IntervalType, e.TimeRemaining), EventsLine);
 
             if (_remainingErrorTicks == 0)
             {
@@ -64,22 +67,22 @@
 
         private void ClearError()
         {
-            SaveCursorAndRewindConsoleTo(_infoRowIndex + 1);
-            ClearCurrentLine();
+            _remainingErrorTicks = 0;
+            ClearLine(ErrorLine);
             RevertCursor();
         }
 
         private void AnnounceOnLine(string announcement, int lineIndex)
         {
-            SaveCursorAndRewindConsoleTo(_infoRowIndex + lineIndex);
-            ClearCurrentLine();
+            ClearLine(lineIndex);
             Console.WriteLine(announcement);
             RevertCursor();
         }
 
-        private static void ClearCurrentLine()
+        private void ClearLine(int lineIndex)
         {
-            Console.Write("\r                                                         \r");
+            SaveCursorAndRewindConsoleTo(_infoRowIndex + lineIndex);
+            ClearCurrentLine();
         }
 
         private void SaveCursorAndRewindConsoleTo(int infoRowIndex)
@@ -96,7 +99,7 @@
 
         public void DisplayErrorForXTicks(string errorMessage, int tickCount)
         {
-            AnnounceOnLine(errorMessage, 2);
+            AnnounceOnLine(errorMessage, ErrorLine);
 
             _remainingErrorTicks = tickCount;
         }
@@ -107,6 +110,11 @@
             ClearCurrentLine();
         }
 
+        private static void ClearCurrentLine()
+        {
+            Console.Write("\r                                                         \r");
+        }
+
         public void Subscribe(PomodoroNotifier pomodoroNotifier)
         {
             pomodoroNotifier.IntervalFinished += IntervalFinished;
@@ -114,10 +122,18 @@
             pomodoroNotifier.Tick += OnTick;
         }
 
-        public void ResetCounter()
+        public void Reset()
         {
+            ClearEvents();
+            ClearError();
             _productiveFinishedCount = 0;
             DisplayFinishedProductiveCount();
+        }
+
+        private void ClearEvents()
+        {
+            ClearLine(EventsLine);
+            RevertCursor();
         }
     }
 }

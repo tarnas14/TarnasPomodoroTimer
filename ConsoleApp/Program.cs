@@ -14,24 +14,44 @@
         static void Main(string[] args)
         {
             var configFactory = new ConfigFactory();
-            var config = configFactory.GetConfig(new []{"25", "5", "20", "4"});
+            var config = configFactory.GetConfig(new []{"1", "1", "1", "1"});
             if (args.Count() == 4)
             {
                 config = configFactory.GetConfig(args);
             }
 
+            DisplayConfiguration(config);
+
             var timeMaster = new SystemTimeMaster();
             var timer = new PomodoroTimer(timeMaster, config);
 
-            SubscribeNotifications(timer);
+            var ui = new Ui();
+            ui.Subscribe(timer);
 
-            DisplayConfiguration(config);
+            var controller = new UserInputController(timer, ui);
 
-            var consoleUi = SetupUserInteraction(timer);
+            _trayNotification = new TrayBubble();
+            _trayNotification.Subscribe(timer);
+
+            var soundNotifications = new SoundNotifications();
+            soundNotifications.Subscribe(timer);
+
+            var consoleUi = SetupUserInteraction(controller, _trayNotification);
 
             new InputLoop(consoleUi).Loop();
 
             Cleanup();
+        }
+
+        private static ConsoleUi SetupUserInteraction(UserInputController controller, TrayBubble trayNotification)
+        {
+            var consoleUi = new ConsoleUi();
+            consoleUi.Subscribe(controller, UserInputController.NextCommand);
+            consoleUi.Subscribe(controller, UserInputController.InterruptCommand);
+            consoleUi.Subscribe(controller, UserInputController.RestartCommand);
+            consoleUi.Subscribe(controller, UserInputController.ResetCommand);
+
+            consoleUi.Subscribe(_trayNotification, UserInputController.ResetCommand);
         }
 
         private static void DisplayConfiguration(PomodoroConfig config)
@@ -41,30 +61,6 @@
             Console.WriteLine("LongBreak - {0}", config.LongBreak);
             Console.WriteLine("Long break after {0} productive intervals", config.LongBreakAfter);
             Console.WriteLine("");
-        }
-
-        private static ConsoleUi SetupUserInteraction(PomodoroTimer timer)
-        {
-            var ui = new Ui();
-            ui.Subscribe(timer);
-
-            var controller = new UserInputController(timer, ui);
-
-            var consoleUi = new ConsoleUi();
-            consoleUi.Subscribe(controller, UserInputController.NextCommand);
-            consoleUi.Subscribe(controller, UserInputController.InterruptCommand);
-            consoleUi.Subscribe(controller, UserInputController.RestartCommand);
-            consoleUi.Subscribe(controller, UserInputController.ResetCommand);
-
-            return consoleUi;
-        }
-
-        private static void SubscribeNotifications(PomodoroNotifier timer)
-        {
-            _trayNotification = new TrayBubble();
-            _trayNotification.Subscribe(timer);
-
-            new SoundNotifications().Subscribe(timer);
         }
 
         private static void Cleanup()

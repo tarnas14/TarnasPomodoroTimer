@@ -33,10 +33,7 @@
                         break;
                     case ResetCommand:
                         _timer.Reset();
-                        _ui.ResetCounter();
-                        break;
-                    case RestartCounterCommand:
-                        _ui.ResetCounter();
+                        _ui.Reset();
                         break;
                 }
             }
@@ -46,7 +43,6 @@
             }
         }
 
-        public const string RestartCounterCommand = "resetCounter";
         public const string NextCommand = "next";
         public const string InterruptCommand = "stahp";
         public const string RestartCommand = "restart";
