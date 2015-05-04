@@ -5,10 +5,10 @@
 Run this from command line (all intervals in minutes)
 if you don't provide any arguments it defaults to:
 
--productive interval: 25min
--short break: 5min
--long break: 20min
--long break after *4* productive intervals
+    - productive interval: 25min
+    - short break: 5min
+    - long break: 20min
+    - long break after *4* productive intervals
 
 ```
 ConsoleApp.exe [<productive interval> <short break> <long break> <long break after X productive intervals>]
