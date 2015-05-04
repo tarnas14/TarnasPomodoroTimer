@@ -50,8 +50,9 @@
             consoleUi.Subscribe(controller, UserInputController.InterruptCommand);
             consoleUi.Subscribe(controller, UserInputController.RestartCommand);
             consoleUi.Subscribe(controller, UserInputController.ResetCommand);
+            consoleUi.Subscribe(controller, UserInputController.HelpCommand);
 
-            consoleUi.Subscribe(_trayNotification, UserInputController.ResetCommand);
+            consoleUi.Subscribe(trayNotification, UserInputController.ResetCommand);
 
             return consoleUi;
         }

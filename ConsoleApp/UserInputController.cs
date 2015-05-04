@@ -20,6 +20,7 @@
             try
             {
                 _ui.ClearTheLineCommandIsOn();
+                _ui.ClearHelp();
                 switch (userCommand.Name)
                 {
                     case NextCommand:
@@ -35,6 +36,9 @@
                         _timer.Reset();
                         _ui.Reset();
                         break;
+                    case HelpCommand:
+                        _ui.DisplayHelp();
+                        break;
                 }
             }
             catch (PomodoroException exception)
@@ -47,5 +51,6 @@
         public const string InterruptCommand = "stahp";
         public const string RestartCommand = "restart";
         public const string ResetCommand = "reset";
+        public const string HelpCommand = "help";
     }
 }

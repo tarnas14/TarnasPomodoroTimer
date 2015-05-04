@@ -7,6 +7,7 @@
     public class Ui : PomodoroSubscriber
     {
         private readonly int _infoRowIndex;
+        private readonly int _helpRowIndex;
         private int _savedRow;
         private int _savedColumn;
         private int _remainingErrorTicks = -1;
@@ -19,6 +20,7 @@
         {
             _productiveFinishedCount = 0;
             _infoRowIndex = Console.CursorTop;
+            _helpRowIndex = _infoRowIndex + 5;
 
             InitDisplayArea();
         }
@@ -112,7 +114,7 @@
 
         private static void ClearCurrentLine()
         {
-            Console.Write("\r                                                         \r");
+            Console.Write("\r                                                                                                 \r");
         }
 
         public void Subscribe(PomodoroNotifier pomodoroNotifier)
@@ -133,6 +135,33 @@
         private void ClearEvents()
         {
             ClearLine(EventsLine);
+            RevertCursor();
+        }
+
+        public void DisplayHelp()
+        {
+            SaveCursorAndRewindConsoleTo(_helpRowIndex);
+            Console.WriteLine("Available commands:");
+            Console.WriteLine("/help    - no comments...");
+            Console.WriteLine("/next    - starts next interval in the configuration");
+            Console.WriteLine("/stahp   - stops current interval");
+            Console.WriteLine("/restart - restarts last interval (if stopped) or current (if in progress)");
+            Console.WriteLine("/reset   - resets the pomodoro to the first interval and resets finished intervals counter");
+            RevertCursor();
+        }
+
+        public void ClearHelp()
+        {
+            const int helpLineCount = 6;
+
+            SaveCursorAndRewindConsoleTo(_helpRowIndex);
+
+            for (int i = 0; i < helpLineCount; i++)
+            {
+                ClearCurrentLine();
+                Console.WriteLine();
+            }
+
             RevertCursor();
         }
     }
