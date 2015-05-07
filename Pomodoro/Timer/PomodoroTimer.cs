@@ -73,7 +73,8 @@ namespace Pomodoro.Timer
                 IntervalFinished(this, new IntervalFinishedEventArgs
                 {
                     Type = CurrentInterval.Type,
-                    NextIntervalType = NextQueuedInterval
+                    NextIntervalType = NextQueuedInterval,
+                    UtcFinishedAt = _timeMaster.UtcNow
                 });
             }
         }

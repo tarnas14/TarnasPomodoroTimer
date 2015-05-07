@@ -6,5 +6,6 @@
     {
         public IntervalType Type { get; set; }
         public IntervalType NextIntervalType { get; set; }
+        public DateTime UtcFinishedAt { get; set; }
     }
 }

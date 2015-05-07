@@ -49,7 +49,7 @@
                 ++_productiveFinishedCount;
                 DisplayFinishedProductiveCount();
             }
-            AnnounceOnLine(string.Format("{0} has ended!\n", e.Type), EventsLine);
+            AnnounceOnLine(string.Format("{0} has ended at {1}!\n", e.Type, e.UtcFinishedAt.ToLocalTime()), EventsLine);
         }
 
         public void OnTick(object sender, TimeRemainingEventArgs e)

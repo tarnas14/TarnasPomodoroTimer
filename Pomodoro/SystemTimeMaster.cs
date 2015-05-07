@@ -63,5 +63,10 @@
             _secondTimer.Stop();
             _currentTimer.Stop();
         }
+
+        public DateTime UtcNow
+        {
+            get { return DateTime.UtcNow; }
+        }
     }
 }

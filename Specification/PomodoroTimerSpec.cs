@@ -372,5 +372,21 @@
             //then
             Assert.That(_timeMaster.Ticking, Is.Not.True);
         }
+
+        [Test]
+        public void ShouldSendFinishTimeWithNotificationAboutFinishedInterval()
+        {
+            //given
+            var expectedTime = DateTime.UtcNow;
+            _timeMaster.SetTime(expectedTime);
+            _pomodoro.StartNext();
+
+            //when
+            _timeMaster.FinishLatestInterval();
+            
+            //then
+            var intervalFinishedEventArgs = _eventHelper.FinishedIntervals.First();
+            Assert.That(intervalFinishedEventArgs.UtcFinishedAt, Is.EqualTo(expectedTime));
+        }
     }
 }
