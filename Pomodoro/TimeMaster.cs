@@ -9,5 +9,6 @@
         event EventHandler<TimeRemainingEventArgs> Tick;
         void Stop();
         DateTime UtcNow { get; }
+        TimeSpan ElapsedTime { get; }
     }
 }

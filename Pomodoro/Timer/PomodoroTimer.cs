@@ -144,6 +144,7 @@ namespace Pomodoro.Timer
             {
                 IntervalInterrupted(this, new IntervalInterruptedEventArgs
                 {
+                    Elapsed = _timeMaster.ElapsedTime,
                     Type = CurrentInterval.Type
                 });
             }

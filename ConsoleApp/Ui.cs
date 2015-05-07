@@ -39,7 +39,7 @@
 
         private void IntervalInterrupted(object sender, IntervalInterruptedEventArgs e)
         {
-            AnnounceOnLine(string.Format("{0} has been interrupted!", e.Type), EventsLine);
+            AnnounceOnLine(string.Format("{0} has been interrupted after {1}!", e.Type, e.Elapsed.ToString(@"hh\:mm\:ss")), EventsLine);
         }
 
         public void IntervalFinished(object sender, IntervalFinishedEventArgs e)

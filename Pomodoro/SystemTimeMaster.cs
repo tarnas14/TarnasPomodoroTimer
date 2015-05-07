@@ -1,6 +1,7 @@
 ﻿namespace Pomodoro
 {
     using System;
+    using System.Diagnostics;
     using System.Timers;
     using Timer;
 
@@ -10,6 +11,17 @@
         private TimeSpan _timeLeft;
         private readonly System.Timers.Timer _currentTimer;
         private Action _callback;
+        private Stopwatch _stopwatch;
+
+        public DateTime UtcNow
+        {
+            get { return DateTime.UtcNow; }
+        }
+
+        public TimeSpan ElapsedTime
+        {
+            get { return _stopwatch.Elapsed; }
+        }
 
         public SystemTimeMaster()
         {
@@ -47,8 +59,14 @@
             _currentTimer.Interval = timeInterval.TotalMilliseconds;
             _callback = callback;
 
+            Start();
+        }
+
+        private void Start()
+        {
             _secondTimer.Start();
             _currentTimer.Start();
+            _stopwatch = Stopwatch.StartNew();
         }
 
         private void OnIntervalTimerElapsed(object sender, ElapsedEventArgs e)
@@ -58,15 +76,12 @@
         }
 
         public event EventHandler<TimeRemainingEventArgs> Tick;
+
         public void Stop()
         {
             _secondTimer.Stop();
             _currentTimer.Stop();
-        }
-
-        public DateTime UtcNow
-        {
-            get { return DateTime.UtcNow; }
+            _stopwatch.Stop();
         }
     }
 }

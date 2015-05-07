@@ -388,5 +388,21 @@
             var intervalFinishedEventArgs = _eventHelper.FinishedIntervals.First();
             Assert.That(intervalFinishedEventArgs.UtcFinishedAt, Is.EqualTo(expectedTime));
         }
+
+        [Test]
+        public void ShouldSendTimeElapsedWhenNotifyingAboutInterruptedInterval()
+        {
+            //given
+            var elapsedTime = TimeSpan.FromMilliseconds(2000);
+            _timeMaster.SetElapsedTime(elapsedTime);
+            _pomodoro.StartNext();
+
+            //when
+            _pomodoro.Interrupt();
+
+            //then
+            var intervalInterruptedEventArgs = _eventHelper.InterruptedIntervals.First();
+            Assert.That(intervalInterruptedEventArgs.Elapsed, Is.EqualTo(elapsedTime));
+        }
     }
 }
