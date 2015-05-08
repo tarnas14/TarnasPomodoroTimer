@@ -10,12 +10,22 @@
     class Program
     {
         private static TrayBubble _trayNotification;
+        private const int ValidNumberOfArguments = 4;
 
         static void Main(string[] args)
         {
+            if (InvalidNumberOfArguments(args.Count()))
+            {
+                Console.WriteLine("You specified {0} arguments, 4 are needed to configure pomodoro.", args.Count());
+                Console.WriteLine("Friendly reminder: <productive interval> <short break> <long break> <long break after X intervals>");
+                return;
+            }
+
+            Console.Clear();
+
             var configFactory = new ConfigFactory();
             var config = configFactory.GetConfig(new []{"25", "5", "20", "4"});
-            if (args.Count() == 4)
+            if (args.Count() == ValidNumberOfArguments)
             {
                 config = configFactory.GetConfig(args);
             }
@@ -41,6 +51,11 @@
             new InputLoop(consoleUi).Loop();
 
             Cleanup();
+        }
+
+        private static bool InvalidNumberOfArguments(int count)
+        {
+            return count > 0 && count != ValidNumberOfArguments;
         }
 
         private static ConsoleUi SetupUserInteraction(UserInputController controller, TrayBubble trayNotification)
