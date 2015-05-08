@@ -1,5 +1,6 @@
 ﻿namespace ConsoleApp
 {
+    using System;
     using System.Linq;
     using Notifications;
     using Pomodoro;
@@ -48,7 +49,18 @@
 
             var consoleUi = SetupUserInteraction(controller, _trayNotification);
 
-            new InputLoop(consoleUi).Loop();
+            while (true)
+            {
+                try
+                {
+                    new InputLoop(consoleUi).Loop();
+                    break;
+                }
+                catch (NotACommandException)
+                {
+                    ui.ClearTheLineCommandIsOn();
+                }
+            }
 
             Cleanup();
         }
