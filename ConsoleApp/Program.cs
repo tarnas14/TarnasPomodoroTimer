@@ -56,9 +56,12 @@
                     new InputLoop(consoleUi).Loop();
                     break;
                 }
-                catch (NotACommandException)
+                catch (TarnasConsoleUiException ex)
                 {
-                    ui.ClearTheLineCommandIsOn();
+                    if (ex is NobodyListensToThisCommand || ex is NotACommandException)
+                    {
+                        ui.ClearTheLineCommandIsOn();
+                    }
                 }
             }
 
