@@ -25,6 +25,7 @@
         private const string _serverAddress = "ws://127.0.0.1:8080/ws";
         protected string ServerAddress { get; set; }
         protected DefaultWampHost Host;
+        private ControlledTimeMaster _timeMaster;
 
         [TestFixtureSetUp]
         public void SetupFixture()
@@ -56,31 +57,15 @@
         [SetUp]
         public void Setup()
         {
-            _pomodoro = new PomodoroTimer(Mock.Of<TimeMaster>(), PomodoroConfig.Standard);
+            _timeMaster = new ControlledTimeMaster();
+            _pomodoro = new PomodoroTimer(_timeMaster, PomodoroConfig.Standard);
             _eventHelper = new PomodoroEventHelper();
             var realm = Host.RealmContainer.GetRealmByName(RealmName);
             new PomodoroServer(realm, _pomodoro);
         }
 
         [Test]
-        public void A()
-        {
-            
-            //given
-            _eventHelper.Subscribe(new RemotePomodoroClient(WampHostHelper.GetRealmProxy(ServerAddress, RealmName)));
-            _eventHelper.Subscribe(new RemotePomodoroClient(WampHostHelper.GetRealmProxy(ServerAddress, RealmName)));
-
-            //when
-            _pomodoro.StartNext();
-
-            //then
-            WaitForExpected(_eventHelper.StartedIntervals, 2);
-
-            Assert.That(_eventHelper.StartedIntervals.Count, Is.EqualTo(2));
-        }
-
-        [Test]
-        public void B()
+        public void MultipleClientsShouldBeInformedAboutIntervalStart()
         {
 
             //given
@@ -97,13 +82,8 @@
             Assert.That(_eventHelper.StartedIntervals.Count, Is.EqualTo(3));
         }
 
-        //when this is the last test in test fixture
-        //we get this exception:
-        /*
-         * WampSharp.V2.Core.Contracts.WampException : Exception of type 'WampSharp.V2.Core.Contracts.WampException' was thrown.
-         */
         [Test]
-        public void C()
+        public void SingleClientShouldBeInformedAboutIntervalStart()
         {
             //given
             _eventHelper.Subscribe(new RemotePomodoroClient(WampHostHelper.GetRealmProxy(ServerAddress, RealmName)));
@@ -115,6 +95,39 @@
             WaitForExpected(_eventHelper.StartedIntervals, 1);
 
             Assert.That(_eventHelper.StartedIntervals.Count, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void SingleClientShouldBeInformedAboutIntervalEnd()
+        {
+            //given
+            _eventHelper.Subscribe(new RemotePomodoroClient(WampHostHelper.GetRealmProxy(ServerAddress, RealmName)));
+            _pomodoro.StartNext();
+
+            //when
+            _timeMaster.FinishLatestInterval();
+
+            //then
+            WaitForExpected(_eventHelper.FinishedIntervals, 1);
+
+            Assert.That(_eventHelper.FinishedIntervals.Count, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void MultipleClientsShouldBeInformedAboutIntervalEnd()
+        {
+            //given
+            _eventHelper.Subscribe(new RemotePomodoroClient(WampHostHelper.GetRealmProxy(ServerAddress, RealmName)));
+            _eventHelper.Subscribe(new RemotePomodoroClient(WampHostHelper.GetRealmProxy(ServerAddress, RealmName)));
+            _pomodoro.StartNext();
+
+            //when
+            _timeMaster.FinishLatestInterval();
+
+            //then
+            WaitForExpected(_eventHelper.FinishedIntervals, 2);
+
+            Assert.That(_eventHelper.FinishedIntervals.Count, Is.EqualTo(2));
         }
     }
 
@@ -129,6 +142,8 @@
         {
             clientProxy.Services.GetSubject<IntervalStartedEventArgs>(PomodoroServer.StartSubject)
                 .Subscribe(OnStartedInterval);
+
+            clientProxy.Services.GetSubject<IntervalFinishedEventArgs>(PomodoroServer.EndSubject).Subscribe(OnFinishedInterval);
         }
 
         private void OnStartedInterval(IntervalStartedEventArgs intervalStartedEventArgs)
@@ -136,6 +151,14 @@
             if (IntervalStarted != null)
             {
                 IntervalStarted(this, intervalStartedEventArgs);
+            }
+        }
+
+        private void OnFinishedInterval(IntervalFinishedEventArgs intervalFinishedEventArgs)
+        {
+            if (IntervalFinished != null)
+            {
+                IntervalFinished(this, intervalFinishedEventArgs);
             }
         }
 
@@ -148,23 +171,32 @@
     internal class PomodoroServer
     {
         private ISubject<IntervalStartedEventArgs> _startSubject;
+        private ISubject<IntervalFinishedEventArgs> _endSubject;
         public const string StartSubject = "pomodoro.start";
+        public const string EndSubject = "pomodoro.end";
 
         public PomodoroServer(IWampHostedRealm realm, PomodoroNotifier pomodoroNotifier)
         {
-            pomodoroNotifier.IntervalStarted += Started;
-
             SetupSubjects(realm);
+
+            pomodoroNotifier.IntervalStarted += Started;
+            pomodoroNotifier.IntervalFinished += Finished;
         }
 
         private void SetupSubjects(IWampHostedRealm realm)
         {
             _startSubject = realm.Services.GetSubject<IntervalStartedEventArgs>(StartSubject);
+            _endSubject = realm.Services.GetSubject<IntervalFinishedEventArgs>(EndSubject);
         }
 
         private void Started(object sender, IntervalStartedEventArgs e)
         {
             _startSubject.OnNext(e);
+        }
+
+        private void Finished(object sender, IntervalFinishedEventArgs e)
+        {
+            _endSubject.OnNext(e);
         }
     }
 }
