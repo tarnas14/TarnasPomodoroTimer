@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Reactive.Subjects;
     using Halp;
-    using Moq;
     using NUnit.Framework;
     using Pomodoro;
     using Pomodoro.Timer;
@@ -162,6 +161,42 @@
             WaitForExpected(_eventHelper.InterruptedIntervals, 3);
 
             Assert.That(_eventHelper.InterruptedIntervals.Count, Is.EqualTo(3));
+        }
+
+        [Test]
+        public void SingleClientShouldBeInformedAboutIntervalRestart()
+        {
+            //given
+            _eventHelper.Subscribe(new RemotePomodoroClient(WampHostHelper.GetRealmProxy(ServerAddress, RealmName)));
+            _pomodoro.StartNext();
+            _pomodoro.Interrupt();
+
+            //when
+            _pomodoro.RestartInterval();
+
+            //then
+            WaitForExpected(_eventHelper.StartedIntervals, 2);
+
+            Assert.That(_eventHelper.StartedIntervals.Count, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void MultipleClientsShouldBeInformedAboutIntervalRestart()
+        {
+            //given
+            _eventHelper.Subscribe(new RemotePomodoroClient(WampHostHelper.GetRealmProxy(ServerAddress, RealmName)));
+            _eventHelper.Subscribe(new RemotePomodoroClient(WampHostHelper.GetRealmProxy(ServerAddress, RealmName)));
+            _eventHelper.Subscribe(new RemotePomodoroClient(WampHostHelper.GetRealmProxy(ServerAddress, RealmName)));
+            _pomodoro.StartNext();
+            _pomodoro.Interrupt();
+
+            //when
+            _pomodoro.RestartInterval();
+
+            //then
+            WaitForExpected(_eventHelper.StartedIntervals, 6);
+
+            Assert.That(_eventHelper.StartedIntervals.Count, Is.EqualTo(6));
         }
     }
 
