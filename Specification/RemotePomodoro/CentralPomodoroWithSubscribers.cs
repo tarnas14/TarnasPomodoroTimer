@@ -129,6 +129,40 @@
 
             Assert.That(_eventHelper.FinishedIntervals.Count, Is.EqualTo(2));
         }
+
+        [Test]
+        public void SingleClientShouldBeInformedAboutIntervalInterruption()
+        {
+            //given
+            _eventHelper.Subscribe(new RemotePomodoroClient(WampHostHelper.GetRealmProxy(ServerAddress, RealmName)));
+            _pomodoro.StartNext();
+
+            //when
+            _pomodoro.Interrupt();
+
+            //then
+            WaitForExpected(_eventHelper.InterruptedIntervals, 1);
+
+            Assert.That(_eventHelper.InterruptedIntervals.Count, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void MultipleClientsShouldBeInformedAboutIntervalInterruption()
+        {
+            //given
+            _eventHelper.Subscribe(new RemotePomodoroClient(WampHostHelper.GetRealmProxy(ServerAddress, RealmName)));
+            _eventHelper.Subscribe(new RemotePomodoroClient(WampHostHelper.GetRealmProxy(ServerAddress, RealmName)));
+            _eventHelper.Subscribe(new RemotePomodoroClient(WampHostHelper.GetRealmProxy(ServerAddress, RealmName)));
+            _pomodoro.StartNext();
+
+            //when
+            _pomodoro.Interrupt();
+
+            //then
+            WaitForExpected(_eventHelper.InterruptedIntervals, 3);
+
+            Assert.That(_eventHelper.InterruptedIntervals.Count, Is.EqualTo(3));
+        }
     }
 
     internal class RemotePomodoroClient : PomodoroNotifier
@@ -144,6 +178,9 @@
                 .Subscribe(OnStartedInterval);
 
             clientProxy.Services.GetSubject<IntervalFinishedEventArgs>(PomodoroServer.EndSubject).Subscribe(OnFinishedInterval);
+
+            clientProxy.Services.GetSubject<IntervalInterruptedEventArgs>(PomodoroServer.InterruptSubject)
+                .Subscribe(OnInterruptedInterval);
         }
 
         private void OnStartedInterval(IntervalStartedEventArgs intervalStartedEventArgs)
@@ -162,6 +199,14 @@
             }
         }
 
+        private void OnInterruptedInterval(IntervalInterruptedEventArgs interruptedEventArgs)
+        {
+            if (IntervalInterrupted != null)
+            {
+                IntervalInterrupted(this, interruptedEventArgs);
+            }
+        }
+
         public event EventHandler<IntervalStartedEventArgs> IntervalStarted;
         public event EventHandler<IntervalInterruptedEventArgs> IntervalInterrupted;
         public event EventHandler<IntervalFinishedEventArgs> IntervalFinished;
@@ -172,8 +217,10 @@
     {
         private ISubject<IntervalStartedEventArgs> _startSubject;
         private ISubject<IntervalFinishedEventArgs> _endSubject;
+        private ISubject<IntervalInterruptedEventArgs> _interruptSubject;
         public const string StartSubject = "pomodoro.start";
         public const string EndSubject = "pomodoro.end";
+        public const string InterruptSubject = "pomodoro.interrupt";
 
         public PomodoroServer(IWampHostedRealm realm, PomodoroNotifier pomodoroNotifier)
         {
@@ -181,12 +228,14 @@
 
             pomodoroNotifier.IntervalStarted += Started;
             pomodoroNotifier.IntervalFinished += Finished;
+            pomodoroNotifier.IntervalInterrupted += Interrupted;
         }
 
         private void SetupSubjects(IWampHostedRealm realm)
         {
             _startSubject = realm.Services.GetSubject<IntervalStartedEventArgs>(StartSubject);
             _endSubject = realm.Services.GetSubject<IntervalFinishedEventArgs>(EndSubject);
+            _interruptSubject = realm.Services.GetSubject<IntervalInterruptedEventArgs>(InterruptSubject);
         }
 
         private void Started(object sender, IntervalStartedEventArgs e)
@@ -197,6 +246,11 @@
         private void Finished(object sender, IntervalFinishedEventArgs e)
         {
             _endSubject.OnNext(e);
+        }
+
+        private void Interrupted(object sender, IntervalInterruptedEventArgs e)
+        {
+            _interruptSubject.OnNext(e);
         }
     }
 }
