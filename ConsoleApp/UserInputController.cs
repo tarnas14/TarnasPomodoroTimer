@@ -4,7 +4,7 @@
     using Pomodoro.Timer;
     using Tarnas.ConsoleUi;
 
-    internal class UserInputController : Subscriber
+    public class UserInputController : Subscriber
     {
         private readonly PomodoroTimer _timer;
         private readonly Ui _ui;

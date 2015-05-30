@@ -20,7 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Tarnas.ConsoleUi.dll = Tarnas.ConsoleUi.dll
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PomodoroServer", "PomodoroServer\PomodoroServer.csproj", "{19C07130-FF5E-4A34-8748-5A4B687FB983}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PomodoroServerApp", "PomodoroServer\PomodoroServerApp.csproj", "{19C07130-FF5E-4A34-8748-5A4B687FB983}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PomodoroClient", "PomodoroClient\PomodoroClient.csproj", "{2C55E9F8-D7E0-472B-A155-D435B01CD398}"
 EndProject

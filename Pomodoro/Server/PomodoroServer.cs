@@ -6,6 +6,9 @@ namespace Pomodoro.Server
 
     public class PomodoroServer
     {
+        public const string DefaultServer = "ws://127.0.0.1:8080/pomodoro";
+        public const string DefaultRealm = "PomodoroRealm";
+
         private ISubject<IntervalStartedEventArgs> _startSubject;
         private ISubject<IntervalFinishedEventArgs> _endSubject;
         private ISubject<IntervalInterruptedEventArgs> _interruptSubject;
