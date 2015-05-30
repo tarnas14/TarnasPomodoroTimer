@@ -197,5 +197,22 @@
 
             Assert.That(_eventHelper.StartedIntervals.Count, Is.EqualTo(6));
         }
+
+        [Test]
+        public void ShouldNotifyAboutTicks()
+        {
+            //given
+            _eventHelper.Subscribe(new RemotePomodoroClient(WampHostHelper.GetRealmProxy(ServerAddress, RealmName)));
+            _eventHelper.Subscribe(new RemotePomodoroClient(WampHostHelper.GetRealmProxy(ServerAddress, RealmName)));
+            _pomodoro.StartNext();
+
+            //when
+            _timeMaster.DoTick();
+
+            //then
+            WaitForExpected(_eventHelper.Ticks, 2);
+
+            Assert.That(_eventHelper.Ticks.Count, Is.EqualTo(2));
+        }
     }
 }

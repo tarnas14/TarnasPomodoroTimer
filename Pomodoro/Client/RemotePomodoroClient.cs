@@ -21,6 +21,8 @@ namespace Pomodoro.Client
 
             clientProxy.Services.GetSubject<IntervalInterruptedEventArgs>(PomodoroServer.InterruptSubject)
                 .Subscribe(OnInterruptedInterval);
+
+            clientProxy.Services.GetSubject<TimeRemainingEventArgs>(PomodoroServer.TickSubject).Subscribe(OnTick);
         }
 
         private void OnStartedInterval(IntervalStartedEventArgs intervalStartedEventArgs)
@@ -44,6 +46,14 @@ namespace Pomodoro.Client
             if (IntervalInterrupted != null)
             {
                 IntervalInterrupted(this, interruptedEventArgs);
+            }
+        }
+
+        private void OnTick(TimeRemainingEventArgs timeRemaining)
+        {
+            if (Tick != null)
+            {
+                Tick(this, timeRemaining);
             }
         }
 
