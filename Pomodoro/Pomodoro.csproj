@@ -80,6 +80,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\Configuration.cs" />
+    <Compile Include="Configuration\ConfigurationFactory.cs" />
     <Compile Include="IntervalFinishedEventArgs.cs" />
     <Compile Include="IntervalType.cs" />
     <Compile Include="PomodoroConfig.cs" />
@@ -87,6 +89,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Client\RemotePomodoroClient.cs" />
     <Compile Include="Server\PomodoroServer.cs" />
+    <Compile Include="Server\PomodoroServerConfig.cs" />
     <Compile Include="SystemTimeMaster.cs" />
     <Compile Include="SystemTimeMasterFactory.cs" />
     <Compile Include="TimeMaster.cs" />

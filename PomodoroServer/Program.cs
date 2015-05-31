@@ -1,8 +1,9 @@
 ﻿namespace PomodoroServerApp
 {
+    using System.Linq;
     using ConsoleApp;
-    using ConsoleApp.Notifications;
     using Pomodoro;
+    using Pomodoro.Configuration;
     using Pomodoro.Server;
     using Pomodoro.Timer;
     using Tarnas.ConsoleUi;
@@ -13,18 +14,14 @@
         static void Main(string[] args)
         {
             var program = new Program();
-            program.Run();
+            program.Run(args);
         }
 
-        private void Run()
+        private void Run(string[] args)
         {
-            var wampHost = new DefaultWampHost(PomodoroServer.DefaultServer);
-            wampHost.Open();
+            var pomodoro = SetupPomodoro(args);
 
-            var configFactory = new ConfigFactory();
-            var config = configFactory.GetConfig(new []{"25", "5", "20", "4"});
-            var pomodoro = new PomodoroTimer(new SystemTimeMaster(), config);
-            new PomodoroServer(wampHost.RealmContainer.GetRealmByName(PomodoroServer.DefaultRealm), pomodoro);
+            var wampHost = SetupServer(pomodoro);
 
             var ui = new Ui();
             ui.Subscribe(pomodoro);
@@ -49,6 +46,33 @@
             }
 
             wampHost.Dispose();
+        }
+
+        private static PomodoroTimer SetupPomodoro(string[] args)
+        {
+            var configFactory = new ConfigFactory();
+            PomodoroConfig pomodoroConfig;
+            if (args.Count() == 4)
+            {
+                pomodoroConfig = configFactory.GetConfig(args.Take(4).ToArray());
+            }
+            else
+            {
+                pomodoroConfig = configFactory.GetConfig(new[] {"25", "5", "20", "4"});
+            }
+            var pomodoro = new PomodoroTimer(new SystemTimeMaster(), pomodoroConfig);
+            return pomodoro;
+        }
+
+        private static DefaultWampHost SetupServer(PomodoroTimer pomodoro)
+        {
+            var serverConfig = ConfigurationFactory.FromFile<PomodoroServerConfig>("serverConfig.json");
+
+            var wampHost = new DefaultWampHost(serverConfig.Server);
+            wampHost.Open();
+
+            new PomodoroServer(wampHost.RealmContainer.GetRealmByName(serverConfig.RealmName), pomodoro);
+            return wampHost;
         }
 
         private static ConsoleUi SetupUserInteraction(UserInputController controller)

@@ -25,7 +25,7 @@
             var ui = new Ui();
             ui.Subscribe(client);
 
-            while (Console.ReadLine() != "q") ;
+            while (Console.ReadLine() != "q");
         }
     }
 }
