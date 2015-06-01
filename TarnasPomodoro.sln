@@ -20,8 +20,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Tarnas.ConsoleUi.dll = Tarnas.ConsoleUi.dll
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PomodoroServerApp", "PomodoroServer\PomodoroServerApp.csproj", "{19C07130-FF5E-4A34-8748-5A4B687FB983}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PomodoroClient", "PomodoroClient\PomodoroClient.csproj", "{2C55E9F8-D7E0-472B-A155-D435B01CD398}"
 EndProject
 Global
@@ -42,10 +40,6 @@ Global
 		{F4D3EB35-AD95-4A91-8300-663A6A4255BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4D3EB35-AD95-4A91-8300-663A6A4255BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F4D3EB35-AD95-4A91-8300-663A6A4255BB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{19C07130-FF5E-4A34-8748-5A4B687FB983}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{19C07130-FF5E-4A34-8748-5A4B687FB983}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{19C07130-FF5E-4A34-8748-5A4B687FB983}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{19C07130-FF5E-4A34-8748-5A4B687FB983}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2C55E9F8-D7E0-472B-A155-D435B01CD398}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2C55E9F8-D7E0-472B-A155-D435B01CD398}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C55E9F8-D7E0-472B-A155-D435B01CD398}.Release|Any CPU.ActiveCfg = Release|Any CPU

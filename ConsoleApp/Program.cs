@@ -4,6 +4,7 @@
     using System.Linq;
     using Notifications;
     using Pomodoro;
+    using Pomodoro.Server;
     using Pomodoro.Timer;
     using Tarnas.ConsoleUi;
     using Console = System.Console;
@@ -39,7 +40,7 @@
             var ui = new Ui();
             ui.Subscribe(timer);
 
-            var controller = new UserInputController(timer, ui);
+            var controller = new UserInputController(timer, ui, new HostedPomodoroServer(timer, "serverConfig.json"));
 
             _trayNotification = new TrayBubble();
             _trayNotification.Subscribe(timer);
@@ -81,6 +82,8 @@
             consoleUi.Subscribe(controller, UserInputController.RestartCommand);
             consoleUi.Subscribe(controller, UserInputController.ResetCommand);
             consoleUi.Subscribe(controller, UserInputController.HelpCommand);
+            consoleUi.Subscribe(controller, UserInputController.StartServerCommand);
+            consoleUi.Subscribe(controller, UserInputController.StopServerCommand);
 
             consoleUi.Subscribe(trayNotification, UserInputController.ResetCommand);
 

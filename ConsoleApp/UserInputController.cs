@@ -1,6 +1,7 @@
 ﻿namespace ConsoleApp
 {
     using Pomodoro;
+    using Pomodoro.Server;
     using Pomodoro.Timer;
     using Tarnas.ConsoleUi;
 
@@ -8,11 +9,13 @@
     {
         private readonly PomodoroTimer _timer;
         private readonly Ui _ui;
+        private HostedPomodoroServer _hostedPomodoroServer;
 
-        public UserInputController(PomodoroTimer timer, Ui ui)
+        public UserInputController(PomodoroTimer timer, Ui ui, HostedPomodoroServer hostedPomodoroServer)
         {
             _timer = timer;
             _ui = ui;
+            _hostedPomodoroServer = hostedPomodoroServer;
         }
 
         public void Execute(UserCommand userCommand)
@@ -39,6 +42,12 @@
                     case HelpCommand:
                         _ui.DisplayHelp();
                         break;
+                    case StartServerCommand:
+                        _hostedPomodoroServer.StartServer();
+                        break;
+                    case StopServerCommand:
+                        _hostedPomodoroServer.StopServer();
+                        break;
                 }
             }
             catch (PomodoroException exception)
@@ -52,5 +61,7 @@
         public const string RestartCommand = "restart";
         public const string ResetCommand = "reset";
         public const string HelpCommand = "help";
+        public const string StartServerCommand = "startserver";
+        public const string StopServerCommand = "stopserver";
     }
 }
