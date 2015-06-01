@@ -16,16 +16,24 @@
 
         private void Run()
         {
-            var channelFactory = new DefaultWampChannelFactory();
-            IWampChannel channel = channelFactory.CreateJsonChannel(PomodoroServer.DefaultServer, PomodoroServer.DefaultRealm);
-            var task = channel.Open();
-            task.Wait(5000);
-            var client = new RemotePomodoroClient(channel.RealmProxy);
+            try
+            {
+                var channelFactory = new DefaultWampChannelFactory();
+                IWampChannel channel = channelFactory.CreateJsonChannel(PomodoroServer.DefaultServer,
+                    PomodoroServer.DefaultRealm);
+                var task = channel.Open();
+                task.Wait(5000);
+                var client = new RemotePomodoroClient(channel.RealmProxy);
 
-            var ui = new Ui();
-            ui.Subscribe(client);
+                var ui = new Ui();
+                ui.Subscribe(client);
 
-            while (Console.ReadLine() != "q");
+                while (Console.ReadLine() != "q") ;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
     }
 }

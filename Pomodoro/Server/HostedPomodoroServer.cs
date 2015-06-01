@@ -36,6 +36,7 @@
                 return;
             }
 
+            _server.Stop();
             _server = null;
             _host.Dispose();
             _host = null;

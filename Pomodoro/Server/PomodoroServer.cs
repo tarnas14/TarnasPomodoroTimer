@@ -9,23 +9,27 @@ namespace Pomodoro.Server
         public const string DefaultServer = "ws://127.0.0.1:8080/pomodoro";
         public const string DefaultRealm = "PomodoroRealm";
 
-        private ISubject<IntervalStartedEventArgs> _startSubject;
-        private ISubject<IntervalFinishedEventArgs> _endSubject;
-        private ISubject<IntervalInterruptedEventArgs> _interruptSubject;
-        private ISubject<TimeRemainingEventArgs> _tickSubject;
         public const string StartSubject = "pomodoro.start";
         public const string EndSubject = "pomodoro.end";
         public const string InterruptSubject = "pomodoro.interrupt";
         public const string TickSubject = "pomodoro.tick";
 
+        private readonly PomodoroNotifier _pomodoroNotifier;
+
+        private ISubject<IntervalStartedEventArgs> _startSubject;
+        private ISubject<IntervalFinishedEventArgs> _endSubject;
+        private ISubject<IntervalInterruptedEventArgs> _interruptSubject;
+        private ISubject<TimeRemainingEventArgs> _tickSubject;
+
         public PomodoroServer(IWampHostedRealm realm, PomodoroNotifier pomodoroNotifier)
         {
             SetupSubjects(realm);
 
-            pomodoroNotifier.IntervalStarted += Started;
-            pomodoroNotifier.IntervalFinished += Finished;
-            pomodoroNotifier.IntervalInterrupted += Interrupted;
-            pomodoroNotifier.Tick += Tick;
+            _pomodoroNotifier = pomodoroNotifier;
+            _pomodoroNotifier.IntervalStarted += Started;
+            _pomodoroNotifier.IntervalFinished += Finished;
+            _pomodoroNotifier.IntervalInterrupted += Interrupted;
+            _pomodoroNotifier.Tick += Tick;
         }
 
         private void SetupSubjects(IWampHostedRealm realm)
@@ -54,6 +58,14 @@ namespace Pomodoro.Server
         private void Tick(object sender, TimeRemainingEventArgs e)
         {
             _tickSubject.OnNext(e);
+        }
+
+        public void Stop()
+        {
+            _pomodoroNotifier.IntervalStarted -= Started;
+            _pomodoroNotifier.IntervalFinished -= Finished;
+            _pomodoroNotifier.IntervalInterrupted -= Interrupted;
+            _pomodoroNotifier.Tick -= Tick;
         }
     }
 }

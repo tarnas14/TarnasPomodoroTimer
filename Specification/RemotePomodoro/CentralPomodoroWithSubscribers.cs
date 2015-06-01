@@ -24,6 +24,7 @@
         protected string ServerAddress { get; set; }
         protected DefaultWampHost Host;
         private ControlledTimeMaster _timeMaster;
+        private PomodoroServer _pomodoroServer;
 
         [TestFixtureSetUp]
         public void SetupFixture()
@@ -59,7 +60,7 @@
             _pomodoro = new PomodoroTimer(_timeMaster, PomodoroConfig.Standard);
             _eventHelper = new PomodoroEventHelper();
             var realm = Host.RealmContainer.GetRealmByName(RealmName);
-            new PomodoroServer(realm, _pomodoro);
+            _pomodoroServer = new PomodoroServer(realm, _pomodoro);
         }
 
         [Test]
@@ -213,6 +214,24 @@
             WaitForExpected(_eventHelper.Ticks, 2);
 
             Assert.That(_eventHelper.Ticks.Count, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void ShouldNotNotifyAboutEventsAfterServerIsStopped()
+        {
+            //given
+            _eventHelper.Subscribe(new RemotePomodoroClient(WampHostHelper.GetRealmProxy(ServerAddress, RealmName)));
+            _pomodoro.StartNext();
+            _pomodoroServer.Stop();
+
+            //when
+            _timeMaster.FinishLatestInterval();
+
+            //then
+            WaitForExpected(_eventHelper.StartedIntervals, 1);
+            WaitForExpected(_eventHelper.FinishedIntervals, 1);
+
+            Assert.That(_eventHelper.FinishedIntervals.Count, Is.EqualTo(0));
         }
     }
 }
