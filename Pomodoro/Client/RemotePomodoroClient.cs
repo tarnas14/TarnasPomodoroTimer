@@ -5,8 +5,13 @@ namespace Pomodoro.Client
     using Timer;
     using WampSharp.V2.Client;
 
-    public class RemotePomodoroClient : PomodoroNotifier
+    public class RemotePomodoroClient : PomodoroNotifier, IDisposable
     {
+        private IDisposable _startSubscription;
+        private IDisposable _finishSubscription;
+        private IDisposable _interruptSubscription;
+        private IDisposable _tickSubscription;
+
         public RemotePomodoroClient(IWampRealmProxy clientProxy)
         {
             SubscribeToSubjects(clientProxy);
@@ -14,15 +19,15 @@ namespace Pomodoro.Client
 
         private void SubscribeToSubjects(IWampRealmProxy clientProxy)
         {
-            clientProxy.Services.GetSubject<IntervalStartedEventArgs>(PomodoroServer.StartSubject)
+            _startSubscription = clientProxy.Services.GetSubject<IntervalStartedEventArgs>(PomodoroServer.StartSubject)
                 .Subscribe(OnStartedInterval);
 
-            clientProxy.Services.GetSubject<IntervalFinishedEventArgs>(PomodoroServer.EndSubject).Subscribe(OnFinishedInterval);
+            _finishSubscription = clientProxy.Services.GetSubject<IntervalFinishedEventArgs>(PomodoroServer.EndSubject).Subscribe(OnFinishedInterval);
 
-            clientProxy.Services.GetSubject<IntervalInterruptedEventArgs>(PomodoroServer.InterruptSubject)
+            _interruptSubscription = clientProxy.Services.GetSubject<IntervalInterruptedEventArgs>(PomodoroServer.InterruptSubject)
                 .Subscribe(OnInterruptedInterval);
 
-            clientProxy.Services.GetSubject<TimeRemainingEventArgs>(PomodoroServer.TickSubject).Subscribe(OnTick);
+            _tickSubscription = clientProxy.Services.GetSubject<TimeRemainingEventArgs>(PomodoroServer.TickSubject).Subscribe(OnTick);
         }
 
         private void OnStartedInterval(IntervalStartedEventArgs intervalStartedEventArgs)
@@ -61,5 +66,13 @@ namespace Pomodoro.Client
         public event EventHandler<IntervalInterruptedEventArgs> IntervalInterrupted;
         public event EventHandler<IntervalFinishedEventArgs> IntervalFinished;
         public event EventHandler<TimeRemainingEventArgs> Tick;
+
+        public void Dispose()
+        {
+            _startSubscription.Dispose();
+            _finishSubscription.Dispose();
+            _interruptSubscription.Dispose();
+            _tickSubscription.Dispose();
+        }
     }
 }

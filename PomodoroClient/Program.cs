@@ -19,16 +19,29 @@
             try
             {
                 var channelFactory = new DefaultWampChannelFactory();
-                IWampChannel channel = channelFactory.CreateJsonChannel(PomodoroServer.DefaultServer,
-                    PomodoroServer.DefaultRealm);
+                IWampChannel channel = channelFactory.CreateJsonChannel(PomodoroServer.DefaultServer, PomodoroServer.DefaultRealm);
                 var task = channel.Open();
                 task.Wait(5000);
-                var client = new RemotePomodoroClient(channel.RealmProxy);
+                var realmProxy = channel.RealmProxy;
+                var client = new RemotePomodoroClient(realmProxy);
+
+                channel.RealmProxy.Monitor.ConnectionBroken += (sender, args) => Console.WriteLine("connection broken");
+                channel.RealmProxy.Monitor.ConnectionEstablished += (sender, args) => Console.WriteLine("connection established");
+                channel.RealmProxy.Monitor.ConnectionError += (sender, args) => Console.WriteLine("connection error");
 
                 var ui = new Ui();
                 ui.Subscribe(client);
 
-                while (Console.ReadLine() != "q") ;
+                while (Console.ReadLine() != "q");
+                channel.Close();
+                client.Dispose();
+            }
+            catch (AggregateException e)
+            {
+                foreach (var innerException in e.InnerExceptions)
+                {
+                    Console.WriteLine(innerException.Message);
+                }
             }
             catch (Exception e)
             {

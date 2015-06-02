@@ -26,10 +26,6 @@ namespace Pomodoro.Server
             SetupSubjects(realm);
 
             _pomodoroNotifier = pomodoroNotifier;
-            _pomodoroNotifier.IntervalStarted += Started;
-            _pomodoroNotifier.IntervalFinished += Finished;
-            _pomodoroNotifier.IntervalInterrupted += Interrupted;
-            _pomodoroNotifier.Tick += Tick;
         }
 
         private void SetupSubjects(IWampHostedRealm realm)
@@ -66,6 +62,14 @@ namespace Pomodoro.Server
             _pomodoroNotifier.IntervalFinished -= Finished;
             _pomodoroNotifier.IntervalInterrupted -= Interrupted;
             _pomodoroNotifier.Tick -= Tick;
+        }
+
+        public void Start()
+        {
+            _pomodoroNotifier.IntervalStarted += Started;
+            _pomodoroNotifier.IntervalFinished += Finished;
+            _pomodoroNotifier.IntervalInterrupted += Interrupted;
+            _pomodoroNotifier.Tick += Tick;
         }
     }
 }

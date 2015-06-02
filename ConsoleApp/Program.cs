@@ -12,6 +12,7 @@
     class Program
     {
         private static TrayBubble _trayNotification;
+        private static HostedPomodoroServer _hostedPomodoroServer;
         private const int ValidNumberOfArguments = 4;
 
         static void Main(string[] args)
@@ -40,7 +41,8 @@
             var ui = new Ui();
             ui.Subscribe(timer);
 
-            var controller = new UserInputController(timer, ui, new HostedPomodoroServer(timer, "serverConfig.json"));
+            _hostedPomodoroServer = new HostedPomodoroServer(timer, "serverConfig.json");
+            var controller = new UserInputController(timer, ui, _hostedPomodoroServer);
 
             _trayNotification = new TrayBubble();
             _trayNotification.Subscribe(timer);
@@ -102,6 +104,7 @@
         private static void Cleanup()
         {
             _trayNotification.Dispose();
+            _hostedPomodoroServer.Dispose();
         }
     }
 }

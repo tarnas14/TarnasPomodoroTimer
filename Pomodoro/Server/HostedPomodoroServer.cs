@@ -1,10 +1,11 @@
 ﻿namespace Pomodoro.Server
 {
+    using System;
     using Configuration;
     using Timer;
     using WampSharp.V2;
 
-    public class HostedPomodoroServer
+    public class HostedPomodoroServer : IDisposable
     {
         private readonly PomodoroNotifier _pomodoroNotifier;
         private DefaultWampHost _host;
@@ -15,31 +16,26 @@
         {
             _pomodoroNotifier = pomodoroNotifier;
             _config = ConfigurationFactory.FromFile<PomodoroServerConfig>(configurationFile);
+            _host = new DefaultWampHost(_config.Server);
+            var realm = _host.RealmContainer.GetRealmByName(_config.RealmName);
+            _server = new PomodoroServer(realm, _pomodoroNotifier);
+            _host.Open();
         }
 
         public void StartServer()
         {
-            if (_host != null)
-            {
-                return;
-            }
-
-            _host = new DefaultWampHost(_config.Server);
-            _server = new PomodoroServer(_host.RealmContainer.GetRealmByName(_config.RealmName), _pomodoroNotifier);
-            _host.Open();
+            _server.Start();
         }
 
         public void StopServer()
         {
-            if (_host == null)
-            {
-                return;
-            }
-
             _server.Stop();
-            _server = null;
+        }
+
+        public void Dispose()
+        {
+            _server.Stop();
             _host.Dispose();
-            _host = null;
         }
     }
 }

@@ -61,6 +61,13 @@
             _eventHelper = new PomodoroEventHelper();
             var realm = Host.RealmContainer.GetRealmByName(RealmName);
             _pomodoroServer = new PomodoroServer(realm, _pomodoro);
+            _pomodoroServer.Start();
+        }
+
+        [TearDown]
+        public void Teardown()
+        {
+            _pomodoroServer.Stop();
         }
 
         [Test]
