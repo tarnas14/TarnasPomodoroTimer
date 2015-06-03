@@ -6,12 +6,10 @@
 
     public class Ui : PomodoroSubscriber
     {
-        private readonly int _infoRowIndex;
-        private readonly int _helpRowIndex;
-        private int _savedRow;
-        private int _savedColumn;
         private int _remainingErrorTicks = -1;
         private int _productiveFinishedCount;
+        private readonly LineDisplay _statusDisplay;
+        private readonly LineDisplay _helpDisplay;
 
         private const int EventsLine = 1;
         private const int ErrorLine = 2;
@@ -19,16 +17,11 @@
         public Ui()
         {
             _productiveFinishedCount = 0;
-            _infoRowIndex = Console.CursorTop;
-            _helpRowIndex = _infoRowIndex + 5;
-
-            InitDisplayArea();
-        }
-
-        private void InitDisplayArea()
-        {
-            Console.Write("\n\n\n");
+            _statusDisplay = new LineDisplay(Console.CursorTop, 3);
+            _helpDisplay = new LineDisplay(Console.CursorTop + 6, 6);
+            SetupHelp();
             DisplayFinishedProductiveCount();
+            Console.SetCursorPosition(0, Console.CursorTop + 4);
         }
 
         private void DisplayFinishedProductiveCount()
@@ -70,33 +63,13 @@
         private void ClearError()
         {
             _remainingErrorTicks = 0;
-            ClearLine(ErrorLine);
-            RevertCursor();
+            _statusDisplay.ClearLine(ErrorLine);
+            _statusDisplay.Update();
         }
 
         private void AnnounceOnLine(string announcement, int lineIndex)
         {
-            ClearLine(lineIndex);
-            Console.WriteLine(announcement);
-            RevertCursor();
-        }
-
-        private void ClearLine(int lineIndex)
-        {
-            SaveCursorAndRewindConsoleTo(_infoRowIndex + lineIndex);
-            ClearCurrentLine();
-        }
-
-        private void SaveCursorAndRewindConsoleTo(int infoRowIndex)
-        {
-            _savedRow = Console.CursorTop;
-            _savedColumn = Console.CursorLeft;
-            Console.SetCursorPosition(0, infoRowIndex);
-        }
-
-        private void RevertCursor()
-        {
-            Console.SetCursorPosition(_savedColumn, _savedRow);
+            _statusDisplay.UpdateLine(lineIndex, announcement);
         }
 
         public void DisplayErrorForXTicks(string errorMessage, int tickCount)
@@ -134,35 +107,28 @@
 
         private void ClearEvents()
         {
-            ClearLine(EventsLine);
-            RevertCursor();
+            _statusDisplay.ClearLine(EventsLine);
+            _statusDisplay.Update();
+        }
+
+        private void SetupHelp()
+        {
+            _helpDisplay.SetLine(0, "Available commands:");
+            _helpDisplay.SetLine(1, "/help    - no comments...");
+            _helpDisplay.SetLine(2, "/next    - starts next interval in the configuration");
+            _helpDisplay.SetLine(3, "/stahp   - stops current interval");
+            _helpDisplay.SetLine(4, "/restart - restarts last interval (if stopped) or current (if in progress)");
+            _helpDisplay.SetLine(5, "/reset   - resets the pomodoro to the first interval and resets finished intervals counter");
         }
 
         public void DisplayHelp()
         {
-            SaveCursorAndRewindConsoleTo(_helpRowIndex);
-            Console.WriteLine("Available commands:");
-            Console.WriteLine("/help    - no comments...");
-            Console.WriteLine("/next    - starts next interval in the configuration");
-            Console.WriteLine("/stahp   - stops current interval");
-            Console.WriteLine("/restart - restarts last interval (if stopped) or current (if in progress)");
-            Console.WriteLine("/reset   - resets the pomodoro to the first interval and resets finished intervals counter");
-            RevertCursor();
+            _helpDisplay.Update();
         }
 
         public void ClearHelp()
         {
-            const int helpLineCount = 6;
-
-            SaveCursorAndRewindConsoleTo(_helpRowIndex);
-
-            for (int i = 0; i < helpLineCount; i++)
-            {
-                ClearCurrentLine();
-                Console.WriteLine();
-            }
-
-            RevertCursor();
+            _helpDisplay.Hide();
         }
     }
 }

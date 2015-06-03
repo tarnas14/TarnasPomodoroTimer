@@ -1,6 +1,5 @@
 ﻿namespace ConsoleApp
 {
-    using System;
     using System.Linq;
     using Notifications;
     using Pomodoro;
@@ -33,11 +32,10 @@
                 config = configFactory.GetConfig(args);
             }
 
-            DisplayConfiguration(config);
-
             var timeMaster = new SystemTimeMaster();
             var timer = new PomodoroTimer(timeMaster, config);
 
+            DisplayConfiguration(config);
             var ui = new Ui();
             ui.Subscribe(timer);
 
@@ -98,7 +96,7 @@
             Console.WriteLine("ShortBreak - {0}", config.ShortBreak);
             Console.WriteLine("LongBreak - {0}", config.LongBreak);
             Console.WriteLine("Long break after {0} productive intervals", config.LongBreakAfter);
-            Console.WriteLine("");
+            Console.WriteLine();
         }
 
         private static void Cleanup()

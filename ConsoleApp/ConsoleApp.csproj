@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigFactory.cs" />
+    <Compile Include="LineDisplay.cs" />
     <Compile Include="Notifications\TrayBubble.cs" />
     <Compile Include="UserInputController.cs" />
     <Compile Include="Program.cs" />
