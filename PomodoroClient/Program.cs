@@ -3,6 +3,7 @@
     using System;
     using ConsoleApp;
     using Pomodoro.Client;
+    using Pomodoro.Configuration;
     using Pomodoro.Server;
     using WampSharp.V2;
 
@@ -18,8 +19,9 @@
         {
             try
             {
+                var config = ConfigurationFactory.FromFile<PomodoroServerConfig>("serverConfig.json");
                 var channelFactory = new DefaultWampChannelFactory();
-                IWampChannel channel = channelFactory.CreateJsonChannel(PomodoroServer.DefaultServer, PomodoroServer.DefaultRealm);
+                IWampChannel channel = channelFactory.CreateJsonChannel(config.Server, config.RealmName);
                 var task = channel.Open();
                 task.Wait(5000);
                 var realmProxy = channel.RealmProxy;
