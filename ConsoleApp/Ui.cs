@@ -11,23 +11,25 @@
         private readonly LineDisplay _statusDisplay;
         private readonly LineDisplay _helpDisplay;
 
-        private const int EventsLine = 1;
-        private const int ErrorLine = 2;
+        private const int ServerIndicatorLine = 0;
+        private const int ProductiveFinishedLine = 1;
+        private const int EventsLine = 2;
+        private const int ErrorLine = 3;
 
         public Ui()
         {
             _productiveFinishedCount = 0;
-            _statusDisplay = new LineDisplay(Console.CursorTop, 3);
+            _statusDisplay = new LineDisplay(Console.CursorTop, 4);
             _helpDisplay = new LineDisplay(Console.CursorTop + 6, 6);
             SetupHelp();
             DisplayFinishedProductiveCount();
-            Console.SetCursorPosition(0, Console.CursorTop + 4);
+            Console.SetCursorPosition(0, Console.CursorTop + 5);
         }
 
         private void DisplayFinishedProductiveCount()
         {
             string productiveFinishedText = string.Format("Productive intervals finished: {0}", _productiveFinishedCount);
-            AnnounceOnLine(productiveFinishedText, 0);
+            AnnounceOnLine(productiveFinishedText, ProductiveFinishedLine);
         }
 
         private void IntervalInterrupted(object sender, IntervalInterruptedEventArgs e)
@@ -129,6 +131,16 @@
         public void ClearHelp()
         {
             _helpDisplay.Hide();
+        }
+
+        public void ServerOn()
+        {
+            _statusDisplay.UpdateLine(ServerIndicatorLine, "Server is ON");
+        }
+
+        public void ServerOff()
+        {
+            _statusDisplay.UpdateLine(ServerIndicatorLine, "Server is OFF");
         }
     }
 }

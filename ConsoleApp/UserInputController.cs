@@ -9,7 +9,7 @@
     {
         private readonly PomodoroTimer _timer;
         private readonly Ui _ui;
-        private HostedPomodoroServer _hostedPomodoroServer;
+        private readonly HostedPomodoroServer _hostedPomodoroServer;
 
         public UserInputController(PomodoroTimer timer, Ui ui, HostedPomodoroServer hostedPomodoroServer)
         {
@@ -43,9 +43,11 @@
                         _ui.DisplayHelp();
                         break;
                     case StartServerCommand:
+                        _ui.ServerOn();
                         _hostedPomodoroServer.StartServer();
                         break;
                     case StopServerCommand:
+                        _ui.ServerOff();
                         _hostedPomodoroServer.StopServer();
                         break;
                 }

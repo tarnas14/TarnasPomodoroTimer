@@ -40,6 +40,8 @@
             ui.Subscribe(timer);
 
             _hostedPomodoroServer = new HostedPomodoroServer(timer, "serverConfig.json");
+            ui.ServerOff();
+
             var controller = new UserInputController(timer, ui, _hostedPomodoroServer);
 
             _trayNotification = new TrayBubble();
