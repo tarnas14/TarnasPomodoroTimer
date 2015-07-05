@@ -1,5 +1,6 @@
 ﻿namespace ConsoleApp
 {
+    using System;
     using Pomodoro;
     using Pomodoro.Timer;
     using Console = System.Console;
@@ -89,7 +90,7 @@
 
         private static void ClearCurrentLine()
         {
-            Console.Write("\r                                                                                                 \r");
+            Console.Write("{0}{1}{0}", '\r', new String(' ', Console.WindowWidth - 2));
         }
 
         public void Subscribe(PomodoroNotifier pomodoroNotifier)
