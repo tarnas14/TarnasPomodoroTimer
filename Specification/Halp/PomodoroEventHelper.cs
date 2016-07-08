@@ -2,16 +2,15 @@
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading;
     using Pomodoro;
     using Pomodoro.Timer;
 
     internal class PomodoroEventHelper : PomodoroSubscriber
     {
-        public IList<TimeRemainingEventArgs> Ticks { get; private set; }
-        public IList<IntervalFinishedEventArgs> FinishedIntervals { get; private set; }
-        public IList<IntervalStartedEventArgs> StartedIntervals { get; private set; }
-        public IList<IntervalInterruptedEventArgs> InterruptedIntervals { get; private set; }
+        public IList<TimeRemainingEventArgs> Ticks { get; }
+        public IList<IntervalFinishedEventArgs> FinishedIntervals { get; }
+        public IList<IntervalStartedEventArgs> StartedIntervals { get; }
+        public IList<IntervalInterruptedEventArgs> InterruptedIntervals { get; }
 
         public int StartedIntervalsCounter;
 

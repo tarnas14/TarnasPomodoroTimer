@@ -4,8 +4,8 @@
 
     public class IntervalFinishedEventArgs : EventArgs
     {
-        public IntervalType Type { get; set; }
-        public IntervalType NextIntervalType { get; set; }
-        public DateTime UtcFinishedAt { get; set; }
+        public IntervalType Type;
+        public IntervalType NextIntervalType;
+        public DateTime UtcFinishedAt;
     }
 }

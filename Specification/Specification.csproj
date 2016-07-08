@@ -92,7 +92,6 @@
     <Compile Include="Halp\PomodoroEventHelper.cs" />
     <Compile Include="PomodoroTimerSpec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Halp\WampHostHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

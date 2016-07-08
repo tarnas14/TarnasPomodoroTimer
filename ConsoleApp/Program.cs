@@ -16,8 +16,8 @@
         {
             if (InvalidNumberOfArguments(args.Count()))
             {
-                Console.WriteLine("You specified {0} arguments, 4 are needed to configure pomodoro.", args.Count());
-                Console.WriteLine("Friendly reminder: <productive interval> <short break> <long break> <long break after X intervals>");
+                Console.WriteLine($"You specified {args.Count()} arguments, 4 are needed to configure pomodoro.");
+                Console.WriteLine(@"Friendly reminder: <productive interval> <short break> <long break> <long break after X intervals>");
                 return;
             }
 
@@ -87,10 +87,10 @@
 
         private static void DisplayConfiguration(PomodoroConfig config)
         {
-            Console.WriteLine("Productivity - {0}", config.Productivity);
-            Console.WriteLine("ShortBreak - {0}", config.ShortBreak);
-            Console.WriteLine("LongBreak - {0}", config.LongBreak);
-            Console.WriteLine("Long break after {0} productive intervals", config.LongBreakAfter);
+            Console.WriteLine($"Productivity - {config.Productivity}");
+            Console.WriteLine($"ShortBreak - {config.ShortBreak}");
+            Console.WriteLine($"LongBreak - {config.LongBreak}");
+            Console.WriteLine($"Long break after {config.LongBreakAfter} productive intervals");
             Console.WriteLine();
         }
 

@@ -13,15 +13,9 @@
         private Action _callback;
         private Stopwatch _stopwatch;
 
-        public DateTime UtcNow
-        {
-            get { return DateTime.UtcNow; }
-        }
+        public DateTime UtcNow => DateTime.UtcNow;
 
-        public TimeSpan ElapsedTime
-        {
-            get { return _stopwatch.Elapsed; }
-        }
+        public TimeSpan ElapsedTime => _stopwatch.Elapsed;
 
         public SystemTimeMaster()
         {
@@ -43,13 +37,10 @@
 
             _timeLeft -= TimeSpan.FromSeconds(1);
 
-            if (Tick != null)
+            Tick?.Invoke(this, new TimeRemainingEventArgs
             {
-                Tick(this, new TimeRemainingEventArgs
-                {
-                    TimeRemaining = _timeLeft
-                });
-            }
+                TimeRemaining = _timeLeft
+            });
         }
 
         public void Pass(TimeSpan timeInterval, Action callback)

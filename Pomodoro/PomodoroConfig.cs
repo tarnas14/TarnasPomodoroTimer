@@ -9,23 +9,17 @@
             LongBreakAfter = 4;
         }
 
-        public TimeSpan Productivity { get; set; }
-        public TimeSpan ShortBreak { get; set; }
-        public TimeSpan LongBreak { get; set; }
-        public int LongBreakAfter { get; set; }
+        public TimeSpan Productivity;
+        public TimeSpan ShortBreak;
+        public TimeSpan LongBreak;
+        public int LongBreakAfter;
 
-        public static PomodoroConfig Standard
+        public static PomodoroConfig Standard => new PomodoroConfig
         {
-            get
-            {
-                return new PomodoroConfig
-                {
-                    Productivity = TimeSpan.FromMinutes(25),
-                    ShortBreak = TimeSpan.FromMinutes(5),
-                    LongBreak = TimeSpan.FromMinutes(20),
-                    LongBreakAfter = 4
-                };
-            }
-        }
+            Productivity = TimeSpan.FromMinutes(25),
+            ShortBreak = TimeSpan.FromMinutes(5),
+            LongBreak = TimeSpan.FromMinutes(20),
+            LongBreakAfter = 4
+        };
     }
 }

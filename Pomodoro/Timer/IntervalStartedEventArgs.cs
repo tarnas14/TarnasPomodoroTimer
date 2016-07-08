@@ -4,7 +4,7 @@
 
     public class IntervalStartedEventArgs : EventArgs
     {
-        public IntervalType Type { get; set; }
-        public TimeSpan Duration { get; set; }
+        public IntervalType Type;
+        public TimeSpan Duration;
     }
 }

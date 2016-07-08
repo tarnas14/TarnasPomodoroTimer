@@ -19,11 +19,13 @@ namespace Pomodoro.Timer
 
         private void OnTick(object sender, TimeRemainingEventArgs e)
         {
-            if (Tick != null)
+            if (Tick == null)
             {
-                e.IntervalType = CurrentInterval.Type;
-                Tick(this, e);
+                return;
             }
+
+            e.IntervalType = CurrentInterval.Type;
+            Tick(this, e);
         }
 
         public event EventHandler<IntervalFinishedEventArgs> IntervalFinished;
@@ -36,14 +38,11 @@ namespace Pomodoro.Timer
             _timeMaster.Pass(CurrentInterval.TimeSpan, OnIntervalEnd);
             CurrentInterval.Start();
 
-            if (IntervalStarted != null)
+            IntervalStarted?.Invoke(this, new IntervalStartedEventArgs
             {
-                IntervalStarted(this, new IntervalStartedEventArgs
-                {
-                    Type = CurrentInterval.Type,
-                    Duration = CurrentInterval.TimeSpan
-                });
-            }
+                Type = CurrentInterval.Type,
+                Duration = CurrentInterval.TimeSpan
+            });
         }
 
         private void PreparePomodoros(PomodoroConfig config)
@@ -68,15 +67,12 @@ namespace Pomodoro.Timer
 
             CurrentInterval.Finish();
 
-            if (IntervalFinished != null)
+            IntervalFinished?.Invoke(this, new IntervalFinishedEventArgs
             {
-                IntervalFinished(this, new IntervalFinishedEventArgs
-                {
-                    Type = CurrentInterval.Type,
-                    NextIntervalType = NextQueuedInterval,
-                    UtcFinishedAt = _timeMaster.UtcNow
-                });
-            }
+                Type = CurrentInterval.Type,
+                NextIntervalType = NextQueuedInterval,
+                UtcFinishedAt = _timeMaster.UtcNow
+            });
         }
 
         public void StartNext()
@@ -123,13 +119,7 @@ namespace Pomodoro.Timer
             }
         }
 
-        private Interval CurrentInterval
-        {
-            get
-            {
-                return _pomodoros[_currentInterval];
-            }
-        }
+        private Interval CurrentInterval => _pomodoros[_currentInterval];
 
         public void Interrupt()
         {
@@ -140,14 +130,11 @@ namespace Pomodoro.Timer
 
             StopCurrentInterval();
 
-            if (IntervalInterrupted != null)
+            IntervalInterrupted?.Invoke(this, new IntervalInterruptedEventArgs
             {
-                IntervalInterrupted(this, new IntervalInterruptedEventArgs
-                {
-                    Elapsed = _timeMaster.ElapsedTime,
-                    Type = CurrentInterval.Type
-                });
-            }
+                Elapsed = _timeMaster.ElapsedTime,
+                Type = CurrentInterval.Type
+            });
         }
 
         private void StopCurrentInterval()

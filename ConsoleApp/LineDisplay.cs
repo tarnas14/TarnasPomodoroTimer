@@ -7,14 +7,12 @@
     class LineDisplay
     {
         private readonly int _displayStartFromTop;
-        private readonly int _lineCount;
         private readonly List<string> _lines;
         private Tuple<int,int> _cursorPosition;
 
         public LineDisplay(int displayStartFromTop, int lineCount)
         {
             _displayStartFromTop = displayStartFromTop;
-            _lineCount = lineCount;
 
             _lines = new List<string>(Enumerable.Repeat(string.Empty, lineCount));
         }
@@ -43,7 +41,7 @@
 
         private static void ClearCurrentLine()
         {
-            var emptyLineString = new String(' ', Console.WindowWidth-2);
+            var emptyLineString = new string(' ', Console.WindowWidth-2);
             Console.Write(emptyLineString);
             Console.Write('\r');
         }

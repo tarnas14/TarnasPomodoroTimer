@@ -1,6 +1,5 @@
 ﻿namespace ConsoleApp
 {
-    using System;
     using Pomodoro;
     using Pomodoro.Timer;
     using Console = System.Console;
@@ -29,13 +28,13 @@
 
         private void DisplayFinishedProductiveCount()
         {
-            string productiveFinishedText = string.Format("Productive intervals finished: {0}", _productiveFinishedCount);
+            string productiveFinishedText = $"Productive intervals finished: {_productiveFinishedCount}";
             AnnounceOnLine(productiveFinishedText, ProductiveFinishedLine);
         }
 
         private void IntervalInterrupted(object sender, IntervalInterruptedEventArgs e)
         {
-            AnnounceOnLine(string.Format("{0} has been interrupted after {1}!", e.Type, e.Elapsed.ToString(@"hh\:mm\:ss")), EventsLine);
+            AnnounceOnLine($"{e.Type} has been interrupted after {e.Elapsed.ToString(@"hh\:mm\:ss")}!", EventsLine);
         }
 
         public void IntervalFinished(object sender, IntervalFinishedEventArgs e)
@@ -45,12 +44,12 @@
                 ++_productiveFinishedCount;
                 DisplayFinishedProductiveCount();
             }
-            AnnounceOnLine(string.Format("{0} has ended at {1}!\n", e.Type, e.UtcFinishedAt.ToLocalTime()), EventsLine);
+            AnnounceOnLine($"{e.Type} has ended at {e.UtcFinishedAt.ToLocalTime()}!\n", EventsLine);
         }
 
         public void OnTick(object sender, TimeRemainingEventArgs e)
         {
-            AnnounceOnLine(string.Format("{0} remaining: {1}", e.IntervalType, e.TimeRemaining), EventsLine);
+            AnnounceOnLine($"{e.IntervalType} remaining: {e.TimeRemaining}", EventsLine);
 
             if (_remainingErrorTicks == 0)
             {
@@ -90,7 +89,7 @@
 
         private static void ClearCurrentLine()
         {
-            Console.Write("{0}{1}{0}", '\r', new String(' ', Console.WindowWidth - 2));
+            Console.Write(@"{0}{1}{0}", '\r', new string(' ', Console.WindowWidth - 2));
         }
 
         public void Subscribe(PomodoroNotifier pomodoroNotifier)

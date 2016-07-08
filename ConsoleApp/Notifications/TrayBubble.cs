@@ -20,15 +20,15 @@
         private void SetupNotificationIcon()
         {
             SetVoidIcon();
-            _notifyIcon.Text = "Tarnas pomodoro timer";
+            _notifyIcon.Text = @"Tarnas pomodoro timer";
             _notifyIcon.Visible = true;
         }
 
         private void IntervalFinished(object sender, IntervalFinishedEventArgs e)
         {
             SetVoidIcon();
-            string bubbleTitle = string.Format("{0} finished!", e.Type);
-            string bubbleText = string.Format("next up: {0}", e.NextIntervalType);
+            string bubbleTitle = $"{e.Type} finished!";
+            string bubbleText = $"next up: {e.NextIntervalType}";
             ShowPopup(bubbleTitle, bubbleText);
             SetIconText(bubbleTitle);
         }
@@ -50,13 +50,13 @@
 
         private void OnTick(object sender, TimeRemainingEventArgs e)
         {
-            SetIconText(string.Format("{0}; left: {1}", e.IntervalType, e.TimeRemaining));
+            SetIconText($"{e.IntervalType}; left: {e.TimeRemaining}");
         }
 
         private void IntervalInterrupted(object sender, IntervalInterruptedEventArgs e)
         {
             SetVoidIcon();
-            string bubbleTitle = string.Format("{0} interrupted!", e.Type);
+            string bubbleTitle = $"{e.Type} interrupted!";
             const string bubbleText = "retart or go to next";
             ShowPopup(bubbleTitle, bubbleText);
             SetIconText(bubbleTitle + " " + bubbleText);
@@ -78,8 +78,8 @@
         private void IntervalStarted(object sender, IntervalStartedEventArgs e)
         {
             SetStateIcon(e.Type);
-            string bubbleTitle = string.Format("{0} started!", e.Type);
-            string bubbleText = string.Format("duration: {0}", e.Duration);
+            string bubbleTitle = $"{e.Type} started!";
+            string bubbleText = $"duration: {e.Duration}";
             ShowPopup(bubbleTitle, bubbleText);
             SetIconText(bubbleTitle + " " + bubbleText);
         }

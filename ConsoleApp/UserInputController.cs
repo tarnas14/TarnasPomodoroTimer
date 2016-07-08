@@ -43,7 +43,7 @@
             }
             catch (PomodoroException exception)
             {
-                _ui.DisplayErrorForXTicks("ERROR: " + exception.Message, 3);
+                _ui.DisplayErrorForXTicks($"ERROR: {exception.Message}", 3);
             }
         }
 
