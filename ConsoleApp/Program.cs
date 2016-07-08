@@ -3,7 +3,6 @@
     using System.Linq;
     using Notifications;
     using Pomodoro;
-    using Pomodoro.Server;
     using Pomodoro.Timer;
     using Tarnas.ConsoleUi;
     using Console = System.Console;
@@ -11,7 +10,6 @@
     class Program
     {
         private static TrayBubble _trayNotification;
-        private static HostedPomodoroServer _hostedPomodoroServer;
         private const int ValidNumberOfArguments = 4;
 
         static void Main(string[] args)
@@ -39,10 +37,7 @@
             var ui = new Ui();
             ui.Subscribe(timer);
 
-            _hostedPomodoroServer = new HostedPomodoroServer(timer, "serverConfig.json");
-            ui.ServerOff();
-
-            var controller = new UserInputController(timer, ui, _hostedPomodoroServer);
+            var controller = new UserInputController(timer, ui);
 
             _trayNotification = new TrayBubble();
             _trayNotification.Subscribe(timer);
@@ -84,8 +79,6 @@
             consoleUi.Subscribe(controller, UserInputController.RestartCommand);
             consoleUi.Subscribe(controller, UserInputController.ResetCommand);
             consoleUi.Subscribe(controller, UserInputController.HelpCommand);
-            consoleUi.Subscribe(controller, UserInputController.StartServerCommand);
-            consoleUi.Subscribe(controller, UserInputController.StopServerCommand);
 
             consoleUi.Subscribe(trayNotification, UserInputController.ResetCommand);
 
@@ -104,7 +97,6 @@
         private static void Cleanup()
         {
             _trayNotification.Dispose();
-            _hostedPomodoroServer.Dispose();
         }
     }
 }
